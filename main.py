@@ -364,14 +364,125 @@ def show_cheapest_provider():
 def show_last_ten_orders():
     try:
         _json = request.json
-        product_name = _json['user']
-        if product_name and request.method == 'GET':
+        username = _json['user']
+        if username and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
             query = "select product_code , products.name, receiptid , total_price, customer.id from products, " \
                     "customer, receipt where (products.receipt_receiptid = receipt.receiptid) & (receipt.customerid = " \
                     "customer.id) & cumtomer.username = \"%s\" group by receipt.receiptid order by receipt.date limit " \
                     "10;"
+            # bindData = (_name, _email, _phone, _address)
+            cursor.execute(query, username)
+            # conn.commit()
+            users_row = cursor.fetchone()
+            response = jsonify(users_row)
+            response.status_code = 200
+            return response
+        else:
+            return show_message()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/comments', methods=['GET'])
+def show_comments():
+    try:
+        _json = request.json
+        product_name = _json['product']
+        if product_name and request.method == 'GET':
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            query = "select comment.content from products, comment, product_has_comment where(" \
+                    "comment.commentid = product_has_comment.comment_commentid) & (product_has_comment.product_code = " \
+                    "products.product_code) & (product.name = \"%s\");"
+            # bindData = (_name, _email, _phone, _address)
+            cursor.execute(query, product_name)
+            # conn.commit()
+            users_row = cursor.fetchone()
+            response = jsonify(users_row)
+            response.status_code = 200
+            return response
+        else:
+            return show_message()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/top-comments', methods=['GET'])
+def show_top_comments():
+    try:
+        _json = request.json
+        product_name = _json['product']
+        if product_name and request.method == 'GET':
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            query = "select comment.content, product_has_comment.score as score from products, comment, " \
+                    "product_has_comment where(comment.commentid = product_has_comment.comment_commentid) & (" \
+                    "product_has_comment.product_code = products.product_code) & (product.name = \"%s\") order by desc " \
+                    "score limit 3;"
+            # bindData = (_name, _email, _phone, _address)
+            cursor.execute(query, product_name)
+            # conn.commit()
+            users_row = cursor.fetchone()
+            response = jsonify(users_row)
+            response.status_code = 200
+            return response
+        else:
+            return show_message()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/worst-comments', methods=['GET'])
+def show_worst_comments():
+    try:
+        _json = request.json
+        product_name = _json['product']
+        if product_name and request.method == 'GET':
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            query = "select comment.content, product_has_comment.score as score from products, comment, " \
+                    "product_has_comment where(comment.commentid = product_has_comment.comment_commentid) & (" \
+                    "product_has_comment.product_code = products.product_code) & (product.name = \"%s\") order by " \
+                    "score limit 3;"
+            # bindData = (_name, _email, _phone, _address)
+            cursor.execute(query, product_name)
+            # conn.commit()
+            users_row = cursor.fetchone()
+            response = jsonify(users_row)
+            response.status_code = 200
+            return response
+        else:
+            return show_message()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/total-sold', methods=['GET'])
+def show_total_sold():
+    try:
+        _json = request.json
+        product_name = _json['product']
+        if product_name and request.method == 'GET':
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            query = "select comment.content, product_has_comment.score as score from products, comment, " \
+                    "product_has_comment where(comment.commentid = product_has_comment.comment_commentid) & (" \
+                    "product_has_comment.product_code = products.product_code) & (product.name = \"%s\") order by " \
+                    "score limit 3;"
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, product_name)
             # conn.commit()

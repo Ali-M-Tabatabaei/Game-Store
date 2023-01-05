@@ -190,7 +190,7 @@ def show_receipts():
 
 
 @app.route('/top-10-customers-weekly', methods=['GET'])
-def show_receipts():
+def show_top_customers_weekly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -214,7 +214,7 @@ def show_receipts():
 
 
 @app.route('/top-10-customers-monthly', methods=['GET'])
-def show_receipts():
+def show_top_customers_monthly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -237,19 +237,8 @@ def show_receipts():
         conn.close()
 
 
-@app.errorhandler(404)
-def show_message(error=None):
-    message = {
-        'status': 404,
-        'message': 'Record not found: ' + request.url,
-    }
-    respone = jsonify(message)
-    respone.status_code = 404
-    return respone
-
-
 @app.route('/most-sold-products-weekly', methods=['GET'])
-def show_receipts():
+def show_most_sold_products_weekly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -274,7 +263,7 @@ def show_receipts():
 
 
 @app.route('/most-sold-products-monthly', methods=['GET'])
-def show_receipts():
+def show_most_sold_products_monthly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -296,6 +285,118 @@ def show_receipts():
     finally:
         cursor.close()
         conn.close()
+
+
+@app.route('/special-offers', methods=['GET'])
+def show_special_offers():
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        query = "select product.name , product.id" \
+                "from discount, products " \
+                "where discount.productid = product.product_code & discount.percentage > 15;"
+
+        cursor.execute(query)
+        # conn.commit()
+        categories_row = cursor.fetchone()
+        response = jsonify(categories_row)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/show-provider', methods=['GET'])
+def show_provider():
+    try:
+        _json = request.json
+        product_name = _json['product']
+        if product_name and request.method == 'GET':
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            query = "select products.provider_name from product where product.name = \"%s\";"
+            # bindData = (_name, _email, _phone, _address)
+            cursor.execute(query, product_name)
+            # conn.commit()
+            provider_row = cursor.fetchone()
+            response = jsonify(provider_row)
+            response.status_code = 200
+            return response
+        else:
+            return show_message()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/show-cheapest-provider', methods=['GET'])
+def show_cheapest_provider():
+    try:
+        _json = request.json
+        product_name = _json['product']
+        if product_name and request.method == 'GET':
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            query = "select products.provider_name, product.sell_price as sell from product where product.name = " \
+                    "\"%s\" order by desc sell;"
+            # bindData = (_name, _email, _phone, _address)
+            cursor.execute(query, product_name)
+            # conn.commit()
+            provider_row = cursor.fetchone()
+            response = jsonify(provider_row)
+            response.status_code = 200
+            return response
+        else:
+            return show_message()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/last-ten-orders', methods=['GET'])
+def show_last_ten_orders():
+    try:
+        _json = request.json
+        product_name = _json['user']
+        if product_name and request.method == 'GET':
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            query = "select product_code , products.name, receiptid , total_price, customer.id from products, " \
+                    "customer, receipt where (products.receipt_receiptid = receipt.receiptid) & (receipt.customerid = " \
+                    "customer.id) & cumtomer.username = \"%s\" group by receipt.receiptid order by receipt.date limit " \
+                    "10;"
+            # bindData = (_name, _email, _phone, _address)
+            cursor.execute(query, product_name)
+            # conn.commit()
+            users_row = cursor.fetchone()
+            response = jsonify(users_row)
+            response.status_code = 200
+            return response
+        else:
+            return show_message()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.errorhandler(404)
+def show_message(error=None):
+    message = {
+        'status': 404,
+        'message': 'Record not found: ' + request.url,
+    }
+    response = jsonify(message)
+    response.status_code = 404
+    return response
 
 
 if __name__ == "__main__":

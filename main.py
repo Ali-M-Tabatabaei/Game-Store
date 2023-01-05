@@ -56,9 +56,9 @@ def emp_details(emp_id):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT id, name, email, phone, address FROM emp WHERE id =%s", emp_id)
         empRow = cursor.fetchone()
-        respone = jsonify(empRow)
-        respone.status_code = 200
-        return respone
+        response = jsonify(empRow)
+        response.status_code = 200
+        return response
     except Exception as e:
         print(e)
     finally:
@@ -101,15 +101,33 @@ def delete_emp(id):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM emp WHERE id =%s", (id,))
         conn.commit()
-        respone = jsonify('Employee deleted successfully!')
-        respone.status_code = 200
-        return respone
+        response = jsonify('Employee deleted successfully!')
+        response.status_code = 200
+        return response
     except Exception as e:
         print(e)
     finally:
         cursor.close()
         conn.close()
 
+
+@app.route('/list-of-products', methods=['GET'])
+def show_products:
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        sqlQuery = "select * from products;"
+        bindData = (_name, _email, _phone, _address)
+        cursor.execute(sqlQuery, bindData)
+        conn.commit()
+        response = jsonify('Employee added successfully!')
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.errorhandler(404)
 def showMessage(error=None):

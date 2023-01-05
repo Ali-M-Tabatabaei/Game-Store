@@ -248,5 +248,55 @@ def show_message(error=None):
     return respone
 
 
+@app.route('/most-sold-products-weekly', methods=['GET'])
+def show_receipts():
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        query = "select product.name, count(*) as count " \
+                "from product, receipt " \
+                "where datediff(curdate(), receipt.date) < 7 & product.isSold = 1 & product.receipt_receiptid = " \
+                "receipt.receiptid " \
+                "group by product.name " \
+                "order by desc count;"
+
+        cursor.execute(query)
+        # conn.commit()
+        categories_row = cursor.fetchone()
+        response = jsonify(categories_row)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/most-sold-products-monthly', methods=['GET'])
+def show_receipts():
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        query = "select product.name, count(*) as count " \
+                "from product, receipt " \
+                "where datediff(curdate(), receipt.date) < 30 & product.isSold = 1 & product.receipt_receiptid = " \
+                "receipt.receiptid " \
+                "group by product.name " \
+                "order by desc count;"
+
+        cursor.execute(query)
+        # conn.commit()
+        categories_row = cursor.fetchone()
+        response = jsonify(categories_row)
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
 if __name__ == "__main__":
     app.run()

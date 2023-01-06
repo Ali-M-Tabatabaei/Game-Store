@@ -358,7 +358,7 @@ DROP TABLE IF EXISTS `official_branches`;
 CREATE TABLE `official_branches` (
   `branch_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
-  `address` varchar(50) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
   `phonenumber` varchar(50) DEFAULT NULL,
   `date_Of_establishment` DATE DEFAULT NULL,
   `deptid` int NOT NULL,
@@ -582,7 +582,7 @@ DROP TABLE IF EXISTS `warehouses`;
 CREATE TABLE `warehouses` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
-  `address` varchar(50) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
   `capacity` varchar(50) DEFAULT NULL,
   `manager_id` int NOT NULL,
   PRIMARY KEY (`id`),

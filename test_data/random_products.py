@@ -31,6 +31,7 @@ for _ in range(5000):
 random.shuffle(consoles)
 product_type = 'game_console'
 
+# consoles
 for _ in range(500):
     console = random.choice(consoles)
     brand = console['brand']

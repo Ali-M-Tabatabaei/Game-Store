@@ -1,3 +1,11 @@
+# given comments
+# product deals
+# product comments
+# warehouses
+# warehouse products
+# warranties
+
+
 cities = ['TEHRAN', 'MASHHAD', 'TABRIZ', 'ISFAHAN', 'YAZD', 'KARAJ', 'AHVAZ', 'KERMAN', \
     'BOJNORD', 'SARI', 'BIRJAND', 'HAMADAN', 'ARAK', 'GORGAN', 'RASHT', 'ORUMIEH', 'BUSHEHR', \
     'SHAHR KORD', 'SANANDAJ', 'ZAHEDAN', 'BANDAR ABBAS', 'KERMANSHAH', 'SHIRAZ', 'KARAJ']

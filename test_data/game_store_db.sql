@@ -174,7 +174,9 @@ DROP TABLE IF EXISTS `discounts`;
 CREATE TABLE `discounts` (
   `discount_id` int NOT NULL AUTO_INCREMENT,
   `product_id` int NOT NULL,
+  `start_date` DATE DEFAULT NULL,
   `end_date` DATE DEFAULT NULL,
+  `active` Varchar(10) DEFAULT 'NO',
   `percentage` int NOT NULL,
   PRIMARY KEY (`discount_id`),
   KEY `product_id` (`product_id`),
@@ -200,13 +202,13 @@ DROP TABLE IF EXISTS `employees`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `employees` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
   `address` varchar(100) DEFAULT NULL,
   `degree_of_education` varchar(50) DEFAULT NULL,
   `has_insurance` int DEFAULT NULL,
-  `superviser_id` int NOT NULL,
+  `superviser_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `superviser_id` (`superviser_id`),
-  CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`superviser_id`) REFERENCES `employees` (`id`)
+  FOREIGN KEY (`superviser_id`) REFERENCES `employees` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

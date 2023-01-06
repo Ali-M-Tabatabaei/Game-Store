@@ -3,7 +3,7 @@ import random
 
 query = '''INSERT INTO employees (name) VALUES(%s);'''
 
-for _ in range(100):
+for _ in range(450):
     name = fake.name()
 
     cursor.execute(query, name)

@@ -282,7 +282,7 @@ CREATE TABLE `employee_works_for_official_branch` (
   KEY `employee_id` (`employee_id`),
   KEY `official_branch_branchid` (`official_branch_branchid`),
   CONSTRAINT `employee_works_for_official_branch_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`),
-  CONSTRAINT `employee_works_for_official_branch_ibfk_2` FOREIGN KEY (`official_branch_branchid`) REFERENCES `official_branchs` (`branch_id`)
+  CONSTRAINT `employee_works_for_official_branch_ibfk_2` FOREIGN KEY (`official_branch_branchid`) REFERENCES `official_branches` (`branch_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -308,7 +308,7 @@ CREATE TABLE `employee_works_for_sales_branch` (
   KEY `employee_id` (`employee_id`),
   KEY `sales_branch_branchid` (`sales_branch_branchid`),
   CONSTRAINT `employee_works_for_sales_branch_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`),
-  CONSTRAINT `employee_works_for_sales_branch_ibfk_2` FOREIGN KEY (`sales_branch_branchid`) REFERENCES `sales_branchs` (`branch_id`)
+  CONSTRAINT `employee_works_for_sales_branch_ibfk_2` FOREIGN KEY (`sales_branch_branchid`) REFERENCES `sales_branches` (`branch_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -349,18 +349,18 @@ LOCK TABLES `given_comments` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `official_branchs`
+-- Table structure for table `official_branches`
 --
 
-DROP TABLE IF EXISTS `official_branchs`;
+DROP TABLE IF EXISTS `official_branches`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `official_branchs` (
+CREATE TABLE `official_branches` (
   `branch_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
   `address` varchar(50) DEFAULT NULL,
   `phonenumber` varchar(50) DEFAULT NULL,
-  `data_Of_establishment` DATE DEFAULT NULL,
+  `date_Of_establishment` DATE DEFAULT NULL,
   `deptid` int NOT NULL,
   `manager_id` int NOT NULL,
   PRIMARY KEY (`branch_id`),
@@ -372,12 +372,12 @@ CREATE TABLE `official_branchs` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `official_branchs`
+-- Dumping data for table `official_branches`
 --
 
-LOCK TABLES `official_branchs` WRITE;
-/*!40000 ALTER TABLE `official_branchs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `official_branchs` ENABLE KEYS */;
+LOCK TABLES `official_branches` WRITE;
+/*!40000 ALTER TABLE `official_branches` DISABLE KEYS */;
+/*!40000 ALTER TABLE `official_branches` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -518,18 +518,18 @@ LOCK TABLES `receipts` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `sales_branchs`
+-- Table structure for table `sales_branches`
 --
 
-DROP TABLE IF EXISTS `sales_branchs`;
+DROP TABLE IF EXISTS `sales_branches`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `sales_branchs` (
+CREATE TABLE `sales_branches` (
   `branch_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
-  `address` varchar(50) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
   `phonenumber` varchar(50) DEFAULT NULL,
-  `data_Of_establishment` DATE DEFAULT NULL,
+  `date_Of_establishment` DATE DEFAULT NULL,
   `deptid` int NOT NULL,
   `manager_id` int NOT NULL,
   PRIMARY KEY (`branch_id`),
@@ -541,12 +541,12 @@ CREATE TABLE `sales_branchs` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `sales_branchs`
+-- Dumping data for table `sales_branches`
 --
 
-LOCK TABLES `sales_branchs` WRITE;
-/*!40000 ALTER TABLE `sales_branchs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `sales_branchs` ENABLE KEYS */;
+LOCK TABLES `sales_branches` WRITE;
+/*!40000 ALTER TABLE `sales_branches` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sales_branches` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

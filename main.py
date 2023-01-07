@@ -317,7 +317,7 @@ def show_provider():
         if product_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select products.provider_name from product where product.name = \"%s\";"
+            query = "select products.provider_name from products where products.name = \"%s\";"
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, product_name)
             # conn.commit()
@@ -342,8 +342,8 @@ def show_cheapest_provider():
         if product_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select products.provider_name, product.sell_price as sell from product where product.name = " \
-                    "\"%s\" order by desc sell;"
+            query = "select products.provider_name, products.sell_price as sell from products where products.name = " \
+                    "\"%s\" order by sell desc;"
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, product_name)
             # conn.commit()
@@ -368,9 +368,10 @@ def show_last_ten_orders():
         if username and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select product_code , products.name, receiptid , total_price, customer.id from products, " \
-                    "customer, receipt where (products.receipt_receiptid = receipt.receiptid) & (receipt.customerid = " \
-                    "customer.id) & cumtomer.username = \"%s\" group by receipt.receiptid order by receipt.date limit " \
+            query = "select product_code , products.name, products.receipt_id , total_price, customer.id from " \
+                    "products, " \
+                    "customer, receipt where (products.receipt_id = receipt.receipt_id) & (receipt.customer_id = " \
+                    "customer.id) & customer.username = \"%s\" order by receipt.date desc limit " \
                     "10;"
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, username)
@@ -396,9 +397,10 @@ def show_comments():
         if product_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select comment.content from products, comment, product_has_comment where(" \
-                    "comment.commentid = product_has_comment.comment_commentid) & (product_has_comment.product_code = " \
-                    "products.product_code) & (product.name = \"%s\");"
+            query = "select comment.content from products, comment, products_has_comment where(" \
+                    "comment.comment_id = products_has_comment.comment_id) & (" \
+                    "products_has_comment.product_code = " \
+                    "products.product_code) & (products.name = \"%s\");"
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, product_name)
             # conn.commit()
@@ -423,10 +425,11 @@ def show_top_comments():
         if product_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select comment.content, product_has_comment.score as score from products, comment, " \
-                    "product_has_comment where(comment.commentid = product_has_comment.comment_commentid) & (" \
-                    "product_has_comment.product_code = products.product_code) & (product.name = \"%s\") order by desc " \
-                    "score limit 3;"
+            query = "select comment.content, products_has_comment.score as score from products, comment, " \
+                    "products_has_comment where(comment.comment_id = products_has_comment.comment_id) & (" \
+                    "products_has_comment.product_code = products.product_code) & (products.name = \"%s\") order by " \
+                    "score desc limit 3;"
+
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, product_name)
             # conn.commit()
@@ -451,9 +454,9 @@ def show_worst_comments():
         if product_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select comment.content, product_has_comment.score as score from products, comment, " \
-                    "product_has_comment where(comment.commentid = product_has_comment.comment_commentid) & (" \
-                    "product_has_comment.product_code = products.product_code) & (product.name = \"%s\") order by " \
+            query = "select comment.content, products_has_comment.score as score from products, comment, " \
+                    "products_has_comment where(comment.comment_id = products_has_comment.comment_id) & (" \
+                    "products_has_comment.product_code = products.product_code) & (products.name = \"%s\") order by " \
                     "score limit 3;"
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, product_name)
@@ -479,8 +482,8 @@ def show_total_sold():
         if product_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select sum(products.sell_price) as totalAmount from products where product.name  = \"%s\" & " \
-                    "product.isSold = 1 & datediff(curdate(), product.sold_date) < 30;"
+            query = "select sum(products.sell_price) as totalAmount from products where products.name  = \"%s\" & " \
+                    "products.isSold = 1 & datediff(curdate(), products.sold_date) < 30;"
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, product_name)
             # conn.commit()
@@ -502,8 +505,8 @@ def show_average_income():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select avg (products.sell_price) as totalAmount from products where product.isSold = 1 & datediff(" \
-                "curdate(), product.sold_date) < 30;"
+        query = "select avg (products.sell_price) as totalAmount from products where products.isSold = 1 & datediff(" \
+                "curdate(), products.sold_date) < 30;"
 
         cursor.execute(query)
         # conn.commit()
@@ -526,7 +529,7 @@ def show_customers_in_city():
         if city_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select customer.name, customer.city from customer where customer.city=\"%s\";"
+            query = "select customer.username, customer.city from customer where customer.city=\"%s\";"
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, city_name)
             # conn.commit()
@@ -552,8 +555,8 @@ def show_providers_in_city():
         if city_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select product.provider_name from product, company where product.provider_name= company.name & " \
-                    "company.city=%s & product.name=%s;"
+            query = "select products.provider_name from products, company where products.provider_name= company.name & " \
+                    "company.city=%s & products.name=%s;"
             bind_data = (city_name, product_name)
             cursor.execute(query, bind_data)
             # conn.commit()

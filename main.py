@@ -116,11 +116,10 @@ def show_products():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select distinct name from products;"
+        query = "SELECT name FROM products;"
         cursor.execute(query)
-        # conn.commit()
-        products_row = cursor.fetchone()
-        response = jsonify(products_row)
+        products = cursor.fetchall()
+        response = jsonify(products)
         response.status_code = 200
         return response
     except Exception as e:
@@ -129,17 +128,16 @@ def show_products():
         cursor.close()
         conn.close()
 
-
+# admin only
 @app.route('/list-of-customers', methods=['GET'])
 def show_customers():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select distinct username from customers;"
+        query = "SELECT username FROM customers;"
         cursor.execute(query)
-        # conn.commit()
-        customers_row = cursor.fetchone()
-        response = jsonify(customers_row)
+        customers = cursor.fetchall()
+        response = jsonify(customers)
         response.status_code = 200
         return response
     except Exception as e:
@@ -154,11 +152,10 @@ def show_categories():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select distinct game_type from products;"
+        query = "SELECT DISTINCT game_type FROM products;"
         cursor.execute(query)
-        # conn.commit()
-        categories_row = cursor.fetchone()
-        response = jsonify(categories_row)
+        categories = cursor.fetchall()
+        response = jsonify(categories)
         response.status_code = 200
         return response
     except Exception as e:

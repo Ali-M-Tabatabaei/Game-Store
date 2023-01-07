@@ -67,9 +67,9 @@
 --11- show the last 10 receits of a user
       select product_code , products.name, receiptid , total_price, customer.id
 	from products, customer, receipt
-	where (products.receipt_receiptid = receipt.receiptid) & (receipt.customerid = customer.id) 
-	group by customer.id
-	limit 10
+	where (products.receipt_receiptid = receipt.receiptid) & (receipt.customerid = customer.id) & cumtomer.username = "%s"
+	group by receipt.receiptid
+	order by receipt.date limit 10
  
 --12- show the list of comment of a given product
       creat proceduer showcomments (productName)
@@ -82,7 +82,7 @@
 
 --13- show the top 3 comments that gave the highest point to the product
 
-      select comment.content, product.name, product_has_comment.score as score
+      select comment.content, product_has_comment.score as score
       from products, comment, product_has_comment
       where(comment.commentid = product_has_comment.comment_commentid) & (product_has_comment.product_code = products.product_code) & (product.name = '')
       order by desc score limit 3

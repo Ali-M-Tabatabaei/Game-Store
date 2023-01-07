@@ -292,7 +292,7 @@ def show_special_offers():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select products.name , products.product_code" \
+        query = "select products.name , products.product_code " \
                 "from discount, products " \
                 "where discount.product_id = products.product_code & discount.percentage > 15;"
 

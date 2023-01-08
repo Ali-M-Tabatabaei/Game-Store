@@ -1,7 +1,7 @@
-from app import connection, cursor, fake
-import random
-from reference_lists import cities, departments, companies, games, consoles
+from test_data.app import connection, cursor, fake
+from test_data.reference_lists import cities, departments, companies, games, consoles
 from datetime import date, timedelta
+import random
 
 ### random employees ###
 query = '''INSERT INTO employees (name) VALUES(%s);'''

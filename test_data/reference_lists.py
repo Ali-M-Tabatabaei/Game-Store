@@ -1,6 +1,4 @@
-# given comments
 # product deals
-# product comments
 # warehouses
 # warehouse products
 # warranties

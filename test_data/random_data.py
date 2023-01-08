@@ -3,7 +3,6 @@ import random
 from reference_lists import cities, departments, companies, games, consoles
 from datetime import date, timedelta
 
-### random customers ###
 ### random employees ###
 query = '''INSERT INTO employees (name) VALUES(%s);'''
 
@@ -117,8 +116,8 @@ for i in range(delim):
 
 connection.commit()
 
-query = '''INSERT INTO sales_branches (name, address, phonenumber, date_Of_establishment, deptid,
-    manager_id) VALUES(%s, %s, %s, %s, %s, %s);'''
+query = '''INSERT INTO sales_branches (name, address, city, phonenumber, date_Of_establishment, deptid,
+    manager_id) VALUES(%s, %s, %s, %s, %s, %s, %s);'''
 
 read_query = '''SELECT id from employees ORDER BY RAND() LIMIT 1'''
 
@@ -126,6 +125,7 @@ read_query = '''SELECT id from employees ORDER BY RAND() LIMIT 1'''
 for i in range(delim, len(departments)):
     name = fake.company()
     address = fake.address()
+    city = random.choice(cities)
     phonenumber = fake.phone_number()
     date_of_establish = str(fake.date_between('-20y'))
 
@@ -135,7 +135,7 @@ for i in range(delim, len(departments)):
     cursor.execute(read_query)
     manager_id = cursor.fetchone()['id']
 
-    bind = (name, address, phonenumber, date_of_establish, deptid, manager_id)
+    bind = (name, address, city, phonenumber, date_of_establish, deptid, manager_id)
 
     cursor.execute(query, bind)
 
@@ -246,15 +246,20 @@ connection.commit()
 
 ### random products ###
 query = '''INSERT INTO products (brand, name, buy_price, sell_price, product_type,
- game_type, in_stock, provider_name)
+ game_type, in_stock, branch_id, provider_name)
  VALUES (
-    %s, %s, %s, %s, %s, %s, %s, %s
+    %s, %s, %s, %s, %s, %s, %s, %s, %s
  )
 '''
+
+branch_query = '''SELECT branch_id FROM sales_branches'''
 
 random.shuffle(games)
 product_type = 'video_game'
 in_stock = 'no'
+
+cursor.execute(branch_query)
+branches = cursor.fetchall()
 
 # games
 for _ in range(5000):
@@ -266,9 +271,10 @@ for _ in range(5000):
     buy_price *= 1000
     sell_price *= 1000
     game_type = game['gtype']
+    branch_id = random.choice(branches)['branch_id']
     provider_name = game['brand']
 
-    bind = (brand, name, buy_price, sell_price, product_type, game_type, in_stock, provider_name)
+    bind = (brand, name, buy_price, sell_price, product_type, game_type, in_stock, branch_id, provider_name)
     cursor.execute(query, bind)
 
 random.shuffle(consoles)
@@ -283,9 +289,10 @@ for _ in range(500):
     rand = random.randint(100, 1000) * 1000
     sell_price = buy_price + rand
     game_type = '-'
+    branch_id = random.choice(branches)['branch_id']
     provider_name = console['brand']
 
-    bind = (brand, name, buy_price, sell_price, product_type, game_type, in_stock, provider_name)
+    bind = (brand, name, buy_price, sell_price, product_type, game_type, in_stock, branch_id, provider_name)
     cursor.execute(query, bind)
 
 connection.commit()
@@ -363,6 +370,56 @@ for _ in range(5000):
     content = fake.text()
 
     bind = (likes, dislikes, content)
+
+    cursor.execute(query, bind)
+
+connection.commit()
+
+### random given comments ####
+query = '''INSERT INTO given_comments (comment_id, customer_id, rating)
+    VALUES(
+        %s, %s, %s
+    )'''
+
+read_query = '''SELECT comment_id FROM comments'''
+customer_read = '''SELECT id FROM customers ORDER BY RAND() LIMIT 1'''
+cursor.execute(read_query)
+comments = cursor.fetchall()
+
+for comment in comments:
+    comment_id = comment['comment_id']
+
+    cursor.execute(customer_read)
+    customer_id = cursor.fetchone()
+    customer_id = customer_id['id']
+
+    rating = random.randint(3, 10)
+
+    bind = (comment_id, customer_id, rating)
+
+    cursor.execute(query, bind)
+
+connection.commit()
+
+### random product comments ####
+query = '''INSERT INTO product_has_comment (product_code, comment_id)
+    VALUES(%s, %s)'''
+
+comments_query = '''SELECT comment_id FROM comments;'''
+products_query = '''SELECT product_code FROM products ORDER BY RAND() LIMIT 100;'''
+
+cursor.execute(comments_query)
+comments = cursor.fetchall()
+cursor.execute(products_query)
+products = cursor.fetchall()
+
+for comment in comments:
+    comment_id = comment['comment_id']
+
+    product = random.choice(products)
+    product_code = product['product_code']
+
+    bind = (product_code, comment_id)
 
     cursor.execute(query, bind)
 

@@ -331,7 +331,8 @@ DROP TABLE IF EXISTS `given_comments`;
 CREATE TABLE `given_comments` (
   `comment_id` int NOT NULL,
   `customer_id` int NOT NULL,
-  `isbuyer` int DEFAULT NULL,
+  `isbuyer` varchar(5) DEFAULT 'No',
+  `rating` int,
   KEY `comment_id` (`comment_id`),
   KEY `customer_id` (`customer_id`),
   CONSTRAINT `given_comment_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`),
@@ -420,9 +421,11 @@ CREATE TABLE `products` (
   `game_type` varchar(100) DEFAULT NULL,
   `receipt_id` int DEFAULT NULL,
   `in_stock` varchar(10) DEFAULT 'NO',
+  `branch_id` int DEFAULT NULL,
   `provider_name` varchar(100) DEFAULT NULL,
   `sold_date` DATE DEFAULT NULL,
   PRIMARY KEY (`product_code`),
+  FOREIGN KEY (`branch_id`) REFERENCES `sales_branches` (`branch_id`),
   FOREIGN KEY (`receipt_id`) REFERENCES `receipts` (`receipt_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -464,16 +467,15 @@ LOCK TABLES `products_deals` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `products_has_comment`
+-- Table structure for table `product_has_comment`
 --
 
-DROP TABLE IF EXISTS `products_has_comment`;
+DROP TABLE IF EXISTS `product_has_comment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `products_has_comment` (
+CREATE TABLE `product_has_comment` (
   `product_code` int NOT NULL,
   `comment_id` int NOT NULL,
-  `score` int DEFAULT NULL,
   KEY `product_code` (`product_code`),
   KEY `comment_id` (`comment_id`),
   CONSTRAINT `products_has_comment_ibfk_1` FOREIGN KEY (`product_code`) REFERENCES `products` (`product_code`),
@@ -482,12 +484,12 @@ CREATE TABLE `products_has_comment` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `products_has_comment`
+-- Dumping data for table `product_has_comment`
 --
 
-LOCK TABLES `products_has_comment` WRITE;
-/*!40000 ALTER TABLE `products_has_comment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `products_has_comment` ENABLE KEYS */;
+LOCK TABLES `product_has_comment` WRITE;
+/*!40000 ALTER TABLE `product_has_comment` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_has_comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -528,6 +530,7 @@ DROP TABLE IF EXISTS `sales_branches`;
 CREATE TABLE `sales_branches` (
   `branch_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
+  `city` VARCHAR(50) NOT NULL,
   `address` varchar(100) DEFAULT NULL,
   `phonenumber` varchar(50) DEFAULT NULL,
   `date_Of_establishment` DATE DEFAULT NULL,

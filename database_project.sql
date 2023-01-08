@@ -1,25 +1,24 @@
 --Queries:
---1- show the list of products:
-	--query:
+--1- show the list of all products:
 SELECT name FROM products;
+
 --2- show the list of customers
-	--query: 
 SELECT username FROM customers;
+
 --3- show the list game types:
-	--query:
 SELECT DISTINCT game_type FROM products;
+
 --4- show the list of receipts
-	--query: 
 SELECT * FROM receipts;
+
 --5- show the top 10 customers of the week:
-	--query:
 SELECT customer_id, username, spent FROM customers,
     (SELECT customer_id, SUM(total_price) AS spent FROM 
     (SELECT * FROM receipts WHERE DATEDIFF(curdate(), date) < 7) AS T
     GROUP BY customer_id ORDER BY spent DESC LIMIT 10) AS top_customers
 WHERE customers.id = top_customers.customer_id;
+
 --5- show the top 10 customers of the month:
-	--query:
 SELECT customer_id, username, spent FROM customers,
     (SELECT customer_id, SUM(total_price) AS spent FROM 
     (SELECT * FROM receipts WHERE DATEDIFF(curdate(), date) < 30) AS T
@@ -39,91 +38,179 @@ SELECT name, SUM(sell_price) AS sold FROM
     (SELECT name, sell_price FROM receipts,
         (SELECT * FROM products WHERE receipt_id IS NOT NULL ) AS sold_products
     WHERE (sold_products.receipt_id = receipts.receipt_id) & (DATEDIFF(CURDATE(), receipts.date) < 30)
-    ) AS weekly_products
+    ) AS monthly_products
 GROUP BY name ORDER BY sold DESC;
 
 --7- show the list of special offers that have discount of over 15 percent 
-    SELECT product.name , product.id 
-        FROM discount, products
-        WHERE discount.productid = product.product_code & discount.percentage > 15
+SELECT products.name , products.sell_price, discounts.percentage
+FROM discounts, products
+WHERE (discounts.product_id = products.product_code) & (discounts.percentage >= 15);
 
 --8- show the provider of a given product
-    create procedure showProvider (productName)
-    begin
-        SELECT products.provider_name
-        FROM product 
-        WHERE product.name = productName 
-    end
-    
+DELIMITER //
+
+CREATE PROCEDURE showInStockBranches(IN product_name VARCHAR(100))
+BEGIN
+    SELECT DISTINCT sales_branches.name as branch_name, sales_branches.city as city 
+    FROM products, sales_branches
+    WHERE (products.branch_id = sales_branches.branch_id) &
+    (products.name = product_name);
+END //
+
+DELIMITER ;
+
+CALL showInStockBranches('xbox one');
 
 --9- show the list of chipest seller of a given product
-     	creat proceduer showChipestProvider (productName)
-     	begin
-     		SELECT products.provider_name, product.sell_price as sell
-		FROM product
-		WHERE product.name = productName
-		ORDER BY DESC sell
-	end
-     
-     
+DELIMITER //
+
+CREATE PROCEDURE showChipestProvider(IN product_name VARCHAR(100))
+BEGIN
+    SELECT sales_branches.name as branch_name, products.sell_price
+    FROM sales_branches, products
+    WHERE (products.name = product_name) & (sales_branches.branch_id = products.branch_id)
+    ORDER BY products.sell_price ASC LIMIT 1;
+END //
+
+DELIMITER ;
+
+CALL showChipestProvider('playstation 5');
+    
 
 --10- show the list of products category
-      SELECT distinc game_type FROM products (TEKRARI)
+--      SELECT distinc game_type FROM products (TEKRARI)
 
---11- show the last 10 receits of a user
-      SELECT product_code , products.name, receiptid , total_price, customer.id
-	FROM products, customer, receipt
-	WHERE (products.receipt_receiptid = receipt.receiptid) & (receipt.customerid = customer.id) 
-	GROUP BY customer.id
-	LIMIT 10
- 
---12- show the list of comment of a given product
-      creat proceduer showcomments (productName)
-      begin
-      SELECT comment.content, product.name
-      FROM products, comment, product_has_comment
-      WHERE(comment.commentid = product_has_comment.comment_commentid) & (product_has_comment.product_code = products.product_code) & (product.name = productName)
-      end
+--11- show the last 10 receipts of a user
+DELIMITER //
 
+CREATE PROCEDURE showTenLastPurchases(IN customer_id INT)
+BEGIN
+    SELECT receipts.date, receipts.total_price, receipts.receipt_id
+    FROM receipts, customers
+    WHERE (customers.id = customer_id) & (receipts.receipt_id = customers.id)
+    ORDER BY DATE
+    LIMIT 10;
+END //
 
---13- show the top 3 comments that gave the highest point to the product
+DELIMITER ;
 
-      SELECT comment.content, product.name, product_has_comment.score as score
-      FROM products, comment, product_has_comment
-      WHERE(comment.commentid = product_has_comment.comment_commentid) & (product_has_comment.product_code = products.product_code) & (product.name = '')
-      ORDER BY DESC score LIMIT 3
+CALL showTenLastPurchases(1);
 
+--12- show the list of comments of a given product
+DELIMITER //
 
---14- show the top 3 comments that gave the lowest point to the product
-      SELECT comment.content, product.name, product_has_comment.score as score
-      FROM products, comment, product_has_comment
-      WHERE(comment.commentid = product_has_comment.comment_commentid) & (product_has_comment.product_code = products.product_code) & (product.name = '')
-      ORDER BY score LIMIT 3
+CREATE PROCEDURE showProductComments(IN product_name VARCHAR(100))
+BEGIN
+SELECT comments.comment_id, comments.content, comments.likes, comments.dislikes
+FROM comments, 
+    (SELECT comment_id
+    FROM product_has_comment, products
+    WHERE (products.name = product_name) & (products.product_code = product_has_comment.product_code)) AS product_comments_ids
+WHERE comments.comment_id = product_comments_ids.comment_id;
+END //
 
---15- show the total amount of sold products
-      
-      SELECT SUM(products.sell_price) as totalAmount
-      FROM products
-      WHERE product.name  = '' & product.isSold = 1 & DATEDIFF(curdate(), product.sold_date) < 30
+DELIMITER ;
 
---16- show the avr income od sold products
+CALL showProductComments('playstation 4')
 
-      SELECT avg (products.sell_price) as totalAmount
-      FROM products
-      WHERE product.isSold = 1 & DATEDIFF(curdate(), product.sold_date) < 30
+--13- show the top 3 highest rating comments of a given product
+DELIMITER //
 
---17- show the name of all customers in the given city
-       
-     SELECT customer.name, customer.city
-     FROM customer
-     WHERE customer.city=''
+CREATE PROCEDURE showProductHighestRatingComments(IN product_name VARCHAR(100))
+BEGIN
+    SELECT comments.comment_id, comments.content, product_comments_ratings.rating
+    FROM comments, 
+        (SELECT given_comments.comment_id, given_comments.rating
+        FROM given_comments, 
+            (SELECT comment_id
+            FROM product_has_comment, products
+            WHERE (products.name = product_name) & (products.product_code = product_has_comment.product_code)
+            ) AS product_comments_ids
+        WHERE given_comments.comment_id = product_comments_ids.comment_id
+        ) AS product_comments_ratings
+    WHERE comments.comment_id = product_comments_ratings.comment_id
+    ORDER BY rating DESC
+    LIMIT 3;
+END //
 
---18-show the providers of the product in the given city
-     
-     SELECT product.provider_name
-     FROM product, compny 
-     WHERE product.provider_name= compny.name & compny.city='' & product.namm=''
-   
-__
-        
+DELIMITER ;
+
+CALL showProductHighestRatingComments('CALL OF DUTY');
+
+--14- show the top 3 lowest rating comments of a given product
+DELIMITER //
+
+CREATE PROCEDURE showProductHighestRatingComments(IN product_name VARCHAR(100))
+BEGIN
+    SELECT comments.comment_id, comments.content, product_comments_ratings.rating
+    FROM comments, 
+        (SELECT given_comments.comment_id, given_comments.rating
+        FROM given_comments, 
+            (SELECT comment_id
+            FROM product_has_comment, products
+            WHERE (products.name = product_name) & (products.product_code = product_has_comment.product_code)
+            ) AS product_comments_ids
+        WHERE given_comments.comment_id = product_comments_ids.comment_id
+        ) AS product_comments_ratings
+    WHERE comments.comment_id = product_comments_ratings.comment_id
+    ORDER BY rating ASC
+    LIMIT 3;
+END //
+
+DELIMITER ;
+
+CALL showProductHighestRatingComments('CALL OF DUTY');
+
+--15- show the monthly sales report of a given product
+DELIMITER //
+
+CREATE PROCEDURE showProductMontlySalesReport(IN product_name VARCHAR(100))
+BEGIN
+    SELECT receipts.date, products.sell_price AS sold_price
+    FROM products, receipts
+    WHERE (products.name = product_name) & (products.receipt_id = receipts.receipt_id) &
+        (DATEDIFF(CURDATE(), receipts.date) <= 30)
+    ORDER BY date DESC;
+END //
+
+DELIMITER ;
+
+CALL showProductMontlySalesReport('uncharted 4')
+
+--16- show the store's avg daily revenue in the last month
+SELECT AVG(sold) avg_sold_per_day
+FROM 
+    (SELECT receipts.date, SUM(sell_price) AS sold
+    FROM products, receipts
+    WHERE (products.receipt_id = receipts.receipt_id) & (DATEDIFF(CURDATE(), receipts.date) <= 30)
+    GROUP BY receipts.date
+    ) AS daily_revenue;
+
+--17- show all customers in the given city
+DELIMITER //
+
+CREATE PROCEDURE showCityCustomers(IN city_name VARCHAR(50))
+BEGIN
+    SELECT * FROM customers
+    WHERE city = city_name;
+END //
+
+DELIMITER ;
+
+CALL showCityCustomers('tehran');
+
+--18- show the sales branches in a given city
+DELIMITER //
+
+CREATE PROCEDURE showCityBranches(IN city_name VARCHAR(50))
+BEGIN
+    SELECT name, address, phonenumber 
+    FROM sales_branches
+    WHERE city = city_name;
+END //
+
+DELIMITER ;
+
+CALL showCityBranches('arak');
+
       

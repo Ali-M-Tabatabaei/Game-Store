@@ -8,8 +8,8 @@ app = Flask(__name__)
 mysql = MySQL(app)
 
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'password'
-app.config['MYSQL_DATABASE_DB'] = 'game_store'
+app.config['MYSQL_DATABASE_PASSWORD'] = '2350343aA@'
+app.config['MYSQL_DATABASE_DB'] = 'Game_store'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
 connection = mysql.connect()

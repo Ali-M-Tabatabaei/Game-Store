@@ -26,7 +26,7 @@ write_query = '''INSERT INTO fulltime_employees (emp_id, salary) VALUES(%s, %s);
 fulltime_range = int(len(employees) * 1 / 3)
 
 for i in range(fulltime_range):
-    emp_id = employees[i]['id'] 
+    emp_id = employees[i]['id']
     rand = random.randint(5, 30)
     salary = rand * 1000000
 
@@ -36,13 +36,12 @@ for i in range(fulltime_range):
 
 connection.commit()
 
-
 ### parttime employees ###
 
 write_query = '''INSERT INTO parttime_employees (emp_id, salary) VALUES(%s, %s);'''
 
 for i in range(fulltime_range, len(employees)):
-    emp_id = employees[i]['id'] 
+    emp_id = employees[i]['id']
     rand = random.randint(3, 15)
     salary = rand * 1000000
 
@@ -51,7 +50,6 @@ for i in range(fulltime_range, len(employees)):
     cursor.execute(write_query, bind)
 
 connection.commit()
-
 
 ### random departments ###
 query = '''INSERT INTO departments (dept_name)
@@ -97,7 +95,6 @@ query = '''INSERT INTO official_branches (name, address, phonenumber, date_Of_es
 
 read_query = '''SELECT id from employees ORDER BY RAND() LIMIT 1'''
 
-
 for i in range(delim):
     name = fake.company()
     address = fake.address()
@@ -120,7 +117,6 @@ query = '''INSERT INTO sales_branches (name, address, city, phonenumber, date_Of
     manager_id) VALUES(%s, %s, %s, %s, %s, %s, %s);'''
 
 read_query = '''SELECT id from employees ORDER BY RAND() LIMIT 1'''
-
 
 for i in range(delim, len(departments)):
     name = fake.company()
@@ -167,7 +163,6 @@ for i in range(delim):
 
 connection.commit()
 
-
 read_query = '''SELECT branch_id FROM sales_branches ORDER BY RAND() LIMIT 1'''
 
 query = '''INSERT INTO employee_works_for_sales_branch (employee_id, sales_branch_branchid)
@@ -184,7 +179,6 @@ for i in range(delim, len(employees)):
     bind = (employee_id, branch_id)
 
     cursor.execute(query, bind)
-
 
 connection.commit()
 
@@ -213,7 +207,7 @@ query = '''INSERT INTO contracts (amount)
 
 for _ in range(500):
     amount = 1000000 * random.randint(1, 9000)
-    
+
     bind = (amount,)
 
     cursor.execute(query, bind)
@@ -327,7 +321,6 @@ for _ in range(count):
 
 connection.commit()
 
-
 ### random discounts ###
 write_query = '''INSERT INTO discounts (product_id, start_date, 
 end_date, active, percentage)
@@ -339,7 +332,6 @@ read_query = '''SELECT product_code FROM products ORDER BY RAND() LIMIT 500;'''
 
 cursor.execute(read_query)
 products = cursor.fetchall()
-
 
 active = 'No'
 
@@ -438,7 +430,7 @@ receipt_update = '''UPDATE receipts SET total_price = %s WHERE receipt_id = %s;'
 customer_id = 1
 _date = str(fake.date_between('-7d'))
 data = 'just buying games for the kids!'
-bind = (0 , customer_id, _date, data)
+bind = (0, customer_id, _date, data)
 cursor.execute(query, bind)
 
 connection.commit()
@@ -489,6 +481,5 @@ for i in range(2, 1000):
 
     bind = (total_price, i)
     cursor.execute(receipt_update, bind)
-
 
 connection.commit()

@@ -1,8 +1,111 @@
+from typing import re
+
 import pymysql
 from app import app
 from config import mysql
 from flask import jsonify
-from flask import flash, request
+from flask import flash, request, render_template, redirect, url_for, session
+from typing import re
+
+
+@app.route('/login/', methods=['GET', 'POST'])
+def login():
+    # Output message if something goes wrong...
+    msg = ''
+    # Check if "username" and "password" POST requests exist (user submitted form)
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        # Create variables for easy access
+        username = request.form['username']
+        password = request.form['password']
+        # Check if account exists using MySQL
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password,))
+        # Fetch one record and return result
+        account = cursor.fetchone()
+        # If account exists in accounts table in out database
+        if account:
+            # Create session data, we can access this data in other routes
+            session['loggedin'] = True
+            session['id'] = account['id']
+            session['username'] = account['username']
+            # Redirect to home page
+            return redirect(url_for('home'))
+        else:
+            # Account doesnt exist or username/password incorrect
+            msg = 'Incorrect username/password!'
+    # Show the login form with message (if any)
+    return render_template('index.html', msg=msg)
+
+
+@app.route('/home')
+def home():
+    # Check if user is loggedin
+    if 'loggedin' in session:
+        # User is loggedin show them the home page
+        return render_template('home.html', username=session['username'])
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    # Output message if something goes wrong...
+    msg = ''
+    # Check if "username", "password" and "email" POST requests exist (user submitted form)
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+        # Create variables for easy access
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+        account = cursor.fetchone()
+        # If account exists show error and validation checks
+        if account:
+            msg = 'Account already exists!'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address!'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only characters and numbers!'
+        elif not username or not password or not email:
+            msg = 'Please fill out the form!'
+        else:
+            # Account doesnt exists and the form data is valid, now insert new account into accounts table
+            cursor.execute('INSERT INTO accounts VALUES (NULL, %s, %s, %s)', (username, password, email,))
+            mysql.connection.commit()
+            msg = 'You have successfully registered!'
+    elif request.method == 'POST':
+        # Form is empty... (no POST data)
+        msg = 'Please fill out the form!'
+    # Show registration form with message (if any)
+    return render_template('register.html', msg=msg)
+
+
+@app.route('/logout')
+def logout():
+    # Remove session data, this will log the user out
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    session.pop('username', None)
+    # Redirect to login page
+    return redirect(url_for('login'))
+
+
+@app.route('/profile')
+def profile():
+    # Check if user is loggedin
+    if 'loggedin' in session:
+        # We need all the account info for the user so we can display it on the profile page
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('SELECT * FROM accounts WHERE id = %s', (session['id'],))
+        account = cursor.fetchone()
+        # Show the profile page with account info
+        return render_template('profile.html', account=account)
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
 
 
 @app.route('/create', methods=['POST'])
@@ -128,23 +231,27 @@ def show_products():
         cursor.close()
         conn.close()
 
+
 # admin only
 @app.route('/list-of-customers', methods=['GET'])
 def show_customers():
-    try:
-        conn = mysql.connect()
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "SELECT username FROM customers;"
-        cursor.execute(query)
-        customers = cursor.fetchall()
-        response = jsonify(customers)
-        response.status_code = 200
-        return response
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
+    if 'loggedin' in session:
+        try:
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            query = "SELECT username FROM customers;"
+            cursor.execute(query)
+            customers = cursor.fetchall()
+            response = jsonify(customers)
+            response.status_code = 200
+            return response
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/categories', methods=['GET'])
@@ -167,10 +274,9 @@ def show_categories():
 
 @app.route('/receipts', methods=['GET'])
 def show_receipts():
-    #try:
+    try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        
         query = '''SELECT * FROM receipts;'''
         cursor.execute(query)
         # conn.commit()
@@ -178,11 +284,11 @@ def show_receipts():
         response = jsonify(categories_row)
         response.status_code = 200
         return response
-    #except Exception as e:
-    #    print(e)
-    #finally:
-    #    cursor.close()
-    #    conn.close()
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
 
 
 @app.route('/top-10-customers-weekly', methods=['GET'])
@@ -190,7 +296,6 @@ def show_top_customers_weekly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-
         query = '''
                 SELECT customer_id, username, spent FROM customers,
                     (SELECT customer_id, SUM(total_price) AS spent FROM 
@@ -198,7 +303,6 @@ def show_top_customers_weekly():
                     GROUP BY customer_id ORDER BY spent DESC LIMIT 10) AS top_customers
                 WHERE customers.id = top_customers.customer_id;
                 '''
-
         cursor.execute(query)
         # conn.commit()
         categories_row = cursor.fetchone()
@@ -217,7 +321,6 @@ def show_top_customers_monthly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-
         query = '''
             SELECT customer_id, username, spent FROM customers,
                 (SELECT customer_id, SUM(total_price) AS spent FROM 
@@ -243,7 +346,6 @@ def show_most_sold_products_weekly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-
         query = '''
             SELECT name, SUM(sell_price) AS sold FROM
                 (SELECT name, sell_price FROM receipts,
@@ -270,7 +372,6 @@ def show_most_sold_products_monthly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-
         query = '''
             SELECT name, SUM(sell_price) AS sold FROM
                 (SELECT name, sell_price FROM receipts,
@@ -297,7 +398,6 @@ def show_special_offers():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-
         query = '''
             SELECT products.name , products.sell_price, discounts.percentage
             FROM discounts, products
@@ -318,56 +418,63 @@ def show_special_offers():
 
 @app.route('/show-provider', methods=['GET'])
 def show_provider():
-    try:
-        _json = request.json
-        product_name = _json['product']
-        if product_name and request.method == 'GET':
-            conn = mysql.connect()
-            cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = '''
-                CALL showInStockBranches('xbox one');
-            '''
-            # bindData = (_name, _email, _phone, _address)
-            cursor.execute(query, product_name)
-            # conn.commit()
-            provider_row = cursor.fetchone()
-            response = jsonify(provider_row)
-            response.status_code = 200
-            return response
-        else:
-            return show_message()
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
+    if 'loggedin' in session:
+        try:
+            _json = request.json
+            product_name = _json['product']
+            if product_name and request.method == 'GET':
+                conn = mysql.connect()
+                cursor = conn.cursor(pymysql.cursors.DictCursor)
+                query = '''
+                    CALL showInStockBranches('xbox one');
+                '''
+                # bindData = (_name, _email, _phone, _address)
+                cursor.execute(query, product_name)
+                # conn.commit()
+                provider_row = cursor.fetchone()
+                response = jsonify(provider_row)
+                response.status_code = 200
+                return response
+            else:
+                return show_message()
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        return redirect(url_for('login'))
+
 
 
 @app.route('/show-cheapest-provider', methods=['GET'])
 def show_cheapest_provider():
-    try:
-        _json = request.json
-        product_name = _json['product']
-        if product_name and request.method == 'GET':
-            conn = mysql.connect()
-            cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = '''
-                CALL showChipestProvider('playstation 5');
-            '''
-            # bindData = (_name, _email, _phone, _address)
-            cursor.execute(query, product_name)
-            # conn.commit()
-            provider_row = cursor.fetchone()
-            response = jsonify(provider_row)
-            response.status_code = 200
-            return response
-        else:
-            return show_message()
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
+    if 'loggedin' in session:
+        try:
+            _json = request.json
+            product_name = _json['product']
+            if product_name and request.method == 'GET':
+                conn = mysql.connect()
+                cursor = conn.cursor(pymysql.cursors.DictCursor)
+                query = '''
+                    CALL showChipestProvider('playstation 5');
+                '''
+                # bindData = (_name, _email, _phone, _address)
+                cursor.execute(query, product_name)
+                # conn.commit()
+                provider_row = cursor.fetchone()
+                response = jsonify(provider_row)
+                response.status_code = 200
+                return response
+            else:
+                return show_message()
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/last-ten-orders', methods=['GET'])
@@ -482,53 +589,60 @@ def show_worst_comments():
 
 @app.route('/total-sold', methods=['GET'])
 def show_total_sold():
-    try:
-        _json = request.json
-        product_name = _json['product']
-        if product_name and request.method == 'GET':
-            conn = mysql.connect()
-            cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select sum(products.sell_price) as totalAmount from products where product.name  = \"%s\" & " \
-                    "product.isSold = 1 & datediff(curdate(), product.sold_date) < 30;"
-            # bindData = (_name, _email, _phone, _address)
-            cursor.execute(query, product_name)
-            # conn.commit()
-            users_row = cursor.fetchone()
-            response = jsonify(users_row)
-            response.status_code = 200
-            return response
-        else:
-            return show_message()
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
+    if 'loggedin' in session:
+        try:
+            _json = request.json
+            product_name = _json['product']
+            if product_name and request.method == 'GET':
+                conn = mysql.connect()
+                cursor = conn.cursor(pymysql.cursors.DictCursor)
+                query = "select sum(products.sell_price) as totalAmount from products where product.name  = \"%s\" & " \
+                        "product.isSold = 1 & datediff(curdate(), product.sold_date) < 30;"
+                # bindData = (_name, _email, _phone, _address)
+                cursor.execute(query, product_name)
+                # conn.commit()
+                users_row = cursor.fetchone()
+                response = jsonify(users_row)
+                response.status_code = 200
+                return response
+            else:
+                return show_message()
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        return redirect(url_for('login'))
+
 
 
 @app.route('/average-income', methods=['GET'])
 def show_average_income():
-    try:
-        conn = mysql.connect()
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select avg (products.sell_price) as totalAmount from products where product.isSold = 1 & datediff(" \
-                "curdate(), product.sold_date) < 30;"
+    if 'loggedin' in session:
+        try:
+            conn = mysql.connect()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            query = "select avg (products.sell_price) as totalAmount from products where product.isSold = 1 & datediff(" \
+                    "curdate(), product.sold_date) < 30;"
 
-        cursor.execute(query)
-        # conn.commit()
-        income = cursor.fetchone()
-        response = jsonify(income)
-        response.status_code = 200
-        return response
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
+            cursor.execute(query)
+            # conn.commit()
+            income = cursor.fetchone()
+            response = jsonify(income)
+            response.status_code = 200
+            return response
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conn.close()
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/city-customers', methods=['GET'])
-def show_customers_in_city():
+def show_city_customers():
     try:
         _json = request.json
         city_name = _json['city']
@@ -591,4 +705,9 @@ def show_message(error=None):
 
 
 if __name__ == "__main__":
+    # Quick test configuration. Please use proper Flask configuration options
+    # in production settings, and use a separate file or environment variables
+    # to manage the secret key!
+    app.secret_key = 'mySuperKey'
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.run()

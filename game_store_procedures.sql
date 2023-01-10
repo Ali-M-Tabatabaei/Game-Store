@@ -1,4 +1,4 @@
-DELIMITER //
+
 
 CREATE PROCEDURE showInStockBranches(IN product_name VARCHAR(100))
 BEGIN
@@ -6,7 +6,7 @@ BEGIN
     FROM products, sales_branches
     WHERE (products.branch_id = sales_branches.branch_id) &
     (products.name = product_name);
-END //
+END;
 
 
 CREATE PROCEDURE showChipestProvider(IN product_name VARCHAR(100))
@@ -15,7 +15,7 @@ BEGIN
     FROM sales_branches, products
     WHERE (products.name = product_name) & (sales_branches.branch_id = products.branch_id)
     ORDER BY products.sell_price ASC LIMIT 1;
-END //
+END;
 
 
 CREATE PROCEDURE showTenLastPurchases(IN customer_id INT)
@@ -25,7 +25,7 @@ BEGIN
     WHERE (customers.id = customer_id) & (receipts.receipt_id = customers.id)
     ORDER BY DATE
     LIMIT 10;
-END //
+END ;
 
 
 CREATE PROCEDURE showProductComments(IN product_name VARCHAR(100))
@@ -36,7 +36,7 @@ FROM comments,
     FROM product_has_comment, products
     WHERE (products.name = product_name) & (products.product_code = product_has_comment.product_code)) AS product_comments_ids
 WHERE comments.comment_id = product_comments_ids.comment_id;
-END //
+END;
 
 
 CREATE PROCEDURE showProductHighestRatingComments(IN product_name VARCHAR(100))
@@ -54,10 +54,10 @@ BEGIN
     WHERE comments.comment_id = product_comments_ratings.comment_id
     ORDER BY rating DESC
     LIMIT 3;
-END //
+END;
 
 
-CREATE PROCEDURE showProductHighestRatingComments(IN product_name VARCHAR(100))
+CREATE PROCEDURE showProductLowestRatingComments(IN product_name VARCHAR(100))
 BEGIN
     SELECT comments.comment_id, comments.content, product_comments_ratings.rating
     FROM comments, 
@@ -72,7 +72,7 @@ BEGIN
     WHERE comments.comment_id = product_comments_ratings.comment_id
     ORDER BY rating ASC
     LIMIT 3;
-END //
+END;
 
 
 CREATE PROCEDURE showProductMontlySalesReport(IN product_name VARCHAR(100))
@@ -82,14 +82,14 @@ BEGIN
     WHERE (products.name = product_name) & (products.receipt_id = receipts.receipt_id) &
         (DATEDIFF(CURDATE(), receipts.date) <= 30)
     ORDER BY date DESC;
-END //
+END;
 
 
 CREATE PROCEDURE showCityCustomers(IN city_name VARCHAR(50))
 BEGIN
     SELECT * FROM customers
     WHERE city = city_name;
-END //
+END;
 
 
 CREATE PROCEDURE showCityBranches(IN city_name VARCHAR(50))
@@ -97,6 +97,4 @@ BEGIN
     SELECT name, address, phonenumber 
     FROM sales_branches
     WHERE city = city_name;
-END //
-
-DELIMITER ;
+END;

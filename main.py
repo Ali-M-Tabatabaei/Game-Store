@@ -116,11 +116,10 @@ def show_products():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select distinct name from products;"
+        query = "SELECT name FROM products;"
         cursor.execute(query)
-        # conn.commit()
-        products_row = cursor.fetchone()
-        response = jsonify(products_row)
+        products = cursor.fetchall()
+        response = jsonify(products)
         response.status_code = 200
         return response
     except Exception as e:
@@ -129,17 +128,16 @@ def show_products():
         cursor.close()
         conn.close()
 
-
+# admin only
 @app.route('/list-of-customers', methods=['GET'])
 def show_customers():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select distinct username from customers;"
+        query = "SELECT username FROM customers;"
         cursor.execute(query)
-        # conn.commit()
-        customers_row = cursor.fetchone()
-        response = jsonify(customers_row)
+        customers = cursor.fetchall()
+        response = jsonify(customers)
         response.status_code = 200
         return response
     except Exception as e:
@@ -154,11 +152,10 @@ def show_categories():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select distinct game_type from products;"
+        query = "SELECT DISTINCT game_type FROM products;"
         cursor.execute(query)
-        # conn.commit()
-        categories_row = cursor.fetchone()
-        response = jsonify(categories_row)
+        categories = cursor.fetchall()
+        response = jsonify(categories)
         response.status_code = 200
         return response
     except Exception as e:
@@ -173,9 +170,8 @@ def show_receipts():
     #try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select product_code, products.name, receipt_id, total_price, customer.id from products, customer, " \
-                "receipt where (products.receipt_receiptid = receipt.receipt_id) & (receipt.customerid = customer.id) " \
-                "group by customer.id;"
+        
+        query = '''SELECT * FROM receipts;'''
         cursor.execute(query)
         # conn.commit()
         categories_row = cursor.fetchone()
@@ -194,11 +190,14 @@ def show_top_customers_weekly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select name, sum(total_price) as spent " \
-                "from (select customer.username as name, receipt.total_price as total_price " \
-                "from customer, receipt " \
-                "where customer.id = receipt.customer_id  & datediff(curdate(), receipt.date) < 7 ) as s1 " \
-                "group by name order by spent desc limit 10; "
+
+        query = '''
+                SELECT customer_id, username, spent FROM customers,
+                    (SELECT customer_id, SUM(total_price) AS spent FROM 
+                    (SELECT * FROM receipts WHERE DATEDIFF(curdate(), date) < 7) AS T
+                    GROUP BY customer_id ORDER BY spent DESC LIMIT 10) AS top_customers
+                WHERE customers.id = top_customers.customer_id;
+                '''
 
         cursor.execute(query)
         # conn.commit()
@@ -218,12 +217,14 @@ def show_top_customers_monthly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select name, sum(total_price) as spent " \
-                "from (select customer.username as name, receipt.total_price as total_price " \
-                "from customer, receipt " \
-                "where customer.id = receipt.customer_id  & datediff(curdate(), receipt.date) < 30 ) as s1 " \
-                "group by name order by spent desc limit 10; "
 
+        query = '''
+            SELECT customer_id, username, spent FROM customers,
+                (SELECT customer_id, SUM(total_price) AS spent FROM 
+                (SELECT * FROM receipts WHERE DATEDIFF(curdate(), date) < 30) AS T
+                GROUP BY customer_id ORDER BY spent DESC LIMIT 10) AS top_customers
+            WHERE customers.id = top_customers.customer_id;
+        '''
         cursor.execute(query)
         # conn.commit()
         categories_row = cursor.fetchone()
@@ -242,13 +243,15 @@ def show_most_sold_products_weekly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select products.name, count(*) as count " \
-                "from products, receipt " \
-                "where datediff(curdate(), receipt.date) < 7 & products.isSold = 1 & products.receipt_id = " \
-                "receipt.receipt_id " \
-                "group by products.name " \
-                "order by count desc;"
 
+        query = '''
+            SELECT name, SUM(sell_price) AS sold FROM
+                (SELECT name, sell_price FROM receipts,
+                    (SELECT * FROM products WHERE receipt_id IS NOT NULL ) AS sold_products
+                WHERE (sold_products.receipt_id = receipts.receipt_id) & (DATEDIFF(CURDATE(), receipts.date) < 7)
+                ) AS weekly_products
+            GROUP BY name ORDER BY sold DESC;
+        '''
         cursor.execute(query)
         # conn.commit()
         categories_row = cursor.fetchone()
@@ -267,13 +270,15 @@ def show_most_sold_products_monthly():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select products.name, count(*) as count " \
-                "from products, receipt " \
-                "where datediff(curdate(), receipt.date) < 30 & products.isSold = 1 & products.receipt_id = " \
-                "receipt.receipt_id " \
-                "group by products.name " \
-                "order by count desc;"
 
+        query = '''
+            SELECT name, SUM(sell_price) AS sold FROM
+                (SELECT name, sell_price FROM receipts,
+                    (SELECT * FROM products WHERE receipt_id IS NOT NULL ) AS sold_products
+                WHERE (sold_products.receipt_id = receipts.receipt_id) & (DATEDIFF(CURDATE(), receipts.date) < 30)
+                ) AS monthly_products
+            GROUP BY name ORDER BY sold DESC;
+        '''
         cursor.execute(query)
         # conn.commit()
         categories_row = cursor.fetchone()
@@ -292,10 +297,12 @@ def show_special_offers():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = "select products.name , products.product_code" \
-                "from discount, products " \
-                "where discount.product_id = products.product_code & discount.percentage > 15;"
 
+        query = '''
+            SELECT products.name , products.sell_price, discounts.percentage
+            FROM discounts, products
+            WHERE (discounts.product_id = products.product_code) & (discounts.percentage >= 15);
+        '''
         cursor.execute(query)
         # conn.commit()
         categories_row = cursor.fetchone()
@@ -317,7 +324,9 @@ def show_provider():
         if product_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select products.provider_name from product where product.name = \"%s\";"
+            query = '''
+                CALL showInStockBranches('xbox one');
+            '''
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, product_name)
             # conn.commit()
@@ -342,8 +351,9 @@ def show_cheapest_provider():
         if product_name and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select products.provider_name, product.sell_price as sell from product where product.name = " \
-                    "\"%s\" order by desc sell;"
+            query = '''
+                CALL showChipestProvider('playstation 5');
+            '''
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, product_name)
             # conn.commit()
@@ -368,10 +378,9 @@ def show_last_ten_orders():
         if username and request.method == 'GET':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = "select product_code , products.name, receiptid , total_price, customer.id from products, " \
-                    "customer, receipt where (products.receipt_receiptid = receipt.receiptid) & (receipt.customerid = " \
-                    "customer.id) & cumtomer.username = \"%s\" group by receipt.receiptid order by receipt.date limit " \
-                    "10;"
+            query = '''
+                CALL showTenLastPurchases(1);
+            '''
             # bindData = (_name, _email, _phone, _address)
             cursor.execute(query, username)
             # conn.commit()

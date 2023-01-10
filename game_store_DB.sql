@@ -16,14 +16,14 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `comment`
+-- Table structure for table `comments`
 --
 
-DROP TABLE IF EXISTS `comment`;
+DROP TABLE IF EXISTS `comments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `comment` (
-  `comment_id` int NOT NULL,
+CREATE TABLE `comments` (
+  `comment_id` int NOT NULL AUTO_INCREMENT,
   `likes` int DEFAULT NULL,
   `dislikes` int DEFAULT NULL,
   `content` varchar(255) DEFAULT NULL,
@@ -32,23 +32,23 @@ CREATE TABLE `comment` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `comment`
+-- Dumping data for table `comments`
 --
 
-LOCK TABLES `comment` WRITE;
-/*!40000 ALTER TABLE `comment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `comment` ENABLE KEYS */;
+LOCK TABLES `comments` WRITE;
+/*!40000 ALTER TABLE `comments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `company`
+-- Table structure for table `companies`
 --
 
-DROP TABLE IF EXISTS `company`;
+DROP TABLE IF EXISTS `companies`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `company` (
-  `id` int NOT NULL,
+CREATE TABLE `companies` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `city` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -56,46 +56,46 @@ CREATE TABLE `company` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `company`
+-- Dumping data for table `companies`
 --
 
-LOCK TABLES `company` WRITE;
-/*!40000 ALTER TABLE `company` DISABLE KEYS */;
-/*!40000 ALTER TABLE `company` ENABLE KEYS */;
+LOCK TABLES `companies` WRITE;
+/*!40000 ALTER TABLE `companies` DISABLE KEYS */;
+/*!40000 ALTER TABLE `companies` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `contract`
+-- Table structure for table `contracts`
 --
 
-DROP TABLE IF EXISTS `contract`;
+DROP TABLE IF EXISTS `contracts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `contract` (
-  `contract_number` int NOT NULL,
-  `amount` int DEFAULT NULL,
+CREATE TABLE `contracts` (
+  `contract_number` int NOT NULL AUTO_INCREMENT,
+  `amount` DECIMAL DEFAULT NULL,
   PRIMARY KEY (`contract_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `contract`
+-- Dumping data for table `contracts`
 --
 
-LOCK TABLES `contract` WRITE;
-/*!40000 ALTER TABLE `contract` DISABLE KEYS */;
-/*!40000 ALTER TABLE `contract` ENABLE KEYS */;
+LOCK TABLES `contracts` WRITE;
+/*!40000 ALTER TABLE `contracts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `contracts` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `customer`
+-- Table structure for table `customers`
 --
 
-DROP TABLE IF EXISTS `customer`;
+DROP TABLE IF EXISTS `customers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `customer` (
-  `id` int NOT NULL,
+CREATE TABLE `customers` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `phonenumber` varchar(255) DEFAULT NULL,
@@ -105,76 +105,78 @@ CREATE TABLE `customer` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `customer`
+-- Dumping data for table `customers`
 --
 
-LOCK TABLES `customer` WRITE;
-/*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-/*!40000 ALTER TABLE `customer` ENABLE KEYS */;
+LOCK TABLES `customers` WRITE;
+/*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `deal`
+-- Table structure for table `deals`
 --
 
-DROP TABLE IF EXISTS `deal`;
+DROP TABLE IF EXISTS `deals`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `deal` (
+CREATE TABLE `deals` (
   `contract_number` int NOT NULL,
   `company_id` int NOT NULL,
-  `deal_id` int NOT NULL,
+  `deal_id` int NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`deal_id`),
   KEY `contract_number` (`contract_number`),
   KEY `company_id` (`company_id`),
-  CONSTRAINT `deal_ibfk_1` FOREIGN KEY (`contract_number`) REFERENCES `contract` (`contract_number`),
-  CONSTRAINT `deal_ibfk_2` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+  CONSTRAINT `deal_ibfk_1` FOREIGN KEY (`contract_number`) REFERENCES `contracts` (`contract_number`),
+  CONSTRAINT `deal_ibfk_2` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `deal`
+-- Dumping data for table `deals`
 --
 
-LOCK TABLES `deal` WRITE;
-/*!40000 ALTER TABLE `deal` DISABLE KEYS */;
-/*!40000 ALTER TABLE `deal` ENABLE KEYS */;
+LOCK TABLES `deals` WRITE;
+/*!40000 ALTER TABLE `deals` DISABLE KEYS */;
+/*!40000 ALTER TABLE `deals` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `department`
+-- Table structure for table `departments`
 --
 
-DROP TABLE IF EXISTS `department`;
+DROP TABLE IF EXISTS `departments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `department` (
-  `deptid` int NOT NULL,
+CREATE TABLE `departments` (
+  `deptid` int NOT NULL AUTO_INCREMENT,
   `dept_name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`deptid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `department`
+-- Dumping data for table `departments`
 --
 
-LOCK TABLES `department` WRITE;
-/*!40000 ALTER TABLE `department` DISABLE KEYS */;
-/*!40000 ALTER TABLE `department` ENABLE KEYS */;
+LOCK TABLES `departments` WRITE;
+/*!40000 ALTER TABLE `departments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `departments` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `discount`
+-- Table structure for table `discounts`
 --
 
-DROP TABLE IF EXISTS `discount`;
+DROP TABLE IF EXISTS `discounts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `discount` (
-  `discount_id` int NOT NULL,
+CREATE TABLE `discounts` (
+  `discount_id` int NOT NULL AUTO_INCREMENT,
   `product_id` int NOT NULL,
-  `end_date` varchar(100) DEFAULT NULL,
+  `start_date` DATE DEFAULT NULL,
+  `end_date` DATE DEFAULT NULL,
+  `active` Varchar(10) DEFAULT 'NO',
   `percentage` int NOT NULL,
   PRIMARY KEY (`discount_id`),
   KEY `product_id` (`product_id`),
@@ -183,88 +185,88 @@ CREATE TABLE `discount` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `discount`
+-- Dumping data for table `discounts`
 --
 
-LOCK TABLES `discount` WRITE;
-/*!40000 ALTER TABLE `discount` DISABLE KEYS */;
-/*!40000 ALTER TABLE `discount` ENABLE KEYS */;
+LOCK TABLES `discounts` WRITE;
+/*!40000 ALTER TABLE `discounts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `discounts` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `employee`
+-- Table structure for table `employees`
 --
 
-DROP TABLE IF EXISTS `employee`;
+DROP TABLE IF EXISTS `employees`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `employee` (
-  `id` int NOT NULL,
+CREATE TABLE `employees` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
   `address` varchar(100) DEFAULT NULL,
   `degree_of_education` varchar(50) DEFAULT NULL,
   `has_insurance` int DEFAULT NULL,
-  `superviser_id` int NOT NULL,
+  `superviser_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `superviser_id` (`superviser_id`),
-  CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`superviser_id`) REFERENCES `employee` (`id`)
+  FOREIGN KEY (`superviser_id`) REFERENCES `employees` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `employee`
+-- Dumping data for table `employees`
 --
 
-LOCK TABLES `employee` WRITE;
-/*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-/*!40000 ALTER TABLE `employee` ENABLE KEYS */;
+LOCK TABLES `employees` WRITE;
+/*!40000 ALTER TABLE `employees` DISABLE KEYS */;
+/*!40000 ALTER TABLE `employees` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `employee_fulltime`
+-- Table structure for table `fulltime_employees`
 --
 
-DROP TABLE IF EXISTS `employee_fulltime`;
+DROP TABLE IF EXISTS `fulltime_employees`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `employee_fulltime` (
+CREATE TABLE `fulltime_employees` (
   `emp_id` int NOT NULL,
-  `salary` int DEFAULT NULL,
+  `salary` DECIMAL DEFAULT NULL,
   KEY `emp_id` (`emp_id`),
-  CONSTRAINT `employee_fulltime_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`id`)
+  CONSTRAINT `employee_fulltime_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `employee_fulltime`
+-- Dumping data for table `fulltime_employees`
 --
 
-LOCK TABLES `employee_fulltime` WRITE;
-/*!40000 ALTER TABLE `employee_fulltime` DISABLE KEYS */;
-/*!40000 ALTER TABLE `employee_fulltime` ENABLE KEYS */;
+LOCK TABLES `fulltime_employees` WRITE;
+/*!40000 ALTER TABLE `fulltime_employees` DISABLE KEYS */;
+/*!40000 ALTER TABLE `fulltime_employees` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `employee_parttime`
+-- Table structure for table `parttime_employees`
 --
 
-DROP TABLE IF EXISTS `employee_parttime`;
+DROP TABLE IF EXISTS `parttime_employees`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `employee_parttime` (
+CREATE TABLE `parttime_employees` (
   `emp_id` int NOT NULL,
-  `salary` int DEFAULT NULL,
+  `salary` DECIMAL DEFAULT NULL,
   KEY `emp_id` (`emp_id`),
-  CONSTRAINT `employee_parttime_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`id`)
+  CONSTRAINT `employee_parttime_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `employee_parttime`
+-- Dumping data for table `parttime_employees`
 --
 
-LOCK TABLES `employee_parttime` WRITE;
-/*!40000 ALTER TABLE `employee_parttime` DISABLE KEYS */;
-/*!40000 ALTER TABLE `employee_parttime` ENABLE KEYS */;
+LOCK TABLES `parttime_employees` WRITE;
+/*!40000 ALTER TABLE `parttime_employees` DISABLE KEYS */;
+/*!40000 ALTER TABLE `parttime_employees` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -279,8 +281,8 @@ CREATE TABLE `employee_works_for_official_branch` (
   `official_branch_branchid` int NOT NULL,
   KEY `employee_id` (`employee_id`),
   KEY `official_branch_branchid` (`official_branch_branchid`),
-  CONSTRAINT `employee_works_for_official_branch_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
-  CONSTRAINT `employee_works_for_official_branch_ibfk_2` FOREIGN KEY (`official_branch_branchid`) REFERENCES `official_branch` (`branch_id`)
+  CONSTRAINT `employee_works_for_official_branch_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`),
+  CONSTRAINT `employee_works_for_official_branch_ibfk_2` FOREIGN KEY (`official_branch_branchid`) REFERENCES `official_branches` (`branch_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -305,8 +307,8 @@ CREATE TABLE `employee_works_for_sales_branch` (
   `sales_branch_branchid` int NOT NULL,
   KEY `employee_id` (`employee_id`),
   KEY `sales_branch_branchid` (`sales_branch_branchid`),
-  CONSTRAINT `employee_works_for_sales_branch_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
-  CONSTRAINT `employee_works_for_sales_branch_ibfk_2` FOREIGN KEY (`sales_branch_branchid`) REFERENCES `sales_branch` (`branch_id`)
+  CONSTRAINT `employee_works_for_sales_branch_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`),
+  CONSTRAINT `employee_works_for_sales_branch_ibfk_2` FOREIGN KEY (`sales_branch_branchid`) REFERENCES `sales_branches` (`branch_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -320,85 +322,86 @@ LOCK TABLES `employee_works_for_sales_branch` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `given_comment`
+-- Table structure for table `given_comments`
 --
 
-DROP TABLE IF EXISTS `given_comment`;
+DROP TABLE IF EXISTS `given_comments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `given_comment` (
+CREATE TABLE `given_comments` (
   `comment_id` int NOT NULL,
   `customer_id` int NOT NULL,
-  `isbuyer` int DEFAULT NULL,
+  `isbuyer` varchar(5) DEFAULT 'No',
+  `rating` int,
   KEY `comment_id` (`comment_id`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `given_comment_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comment` (`comment_id`),
-  CONSTRAINT `given_comment_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
+  CONSTRAINT `given_comment_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`),
+  CONSTRAINT `given_comment_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `given_comment`
+-- Dumping data for table `given_comments`
 --
 
-LOCK TABLES `given_comment` WRITE;
-/*!40000 ALTER TABLE `given_comment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `given_comment` ENABLE KEYS */;
+LOCK TABLES `given_comments` WRITE;
+/*!40000 ALTER TABLE `given_comments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `given_comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `official_branch`
+-- Table structure for table `official_branches`
 --
 
-DROP TABLE IF EXISTS `official_branch`;
+DROP TABLE IF EXISTS `official_branches`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `official_branch` (
-  `branch_id` int NOT NULL,
+CREATE TABLE `official_branches` (
+  `branch_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
-  `address` varchar(50) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
   `phonenumber` varchar(50) DEFAULT NULL,
-  `data_Of_creation` varchar(50) DEFAULT NULL,
+  `date_Of_establishment` DATE DEFAULT NULL,
   `deptid` int NOT NULL,
   `manager_id` int NOT NULL,
   PRIMARY KEY (`branch_id`),
   KEY `manager_id` (`manager_id`),
   KEY `deptid` (`deptid`),
-  CONSTRAINT `official_branch_ibfk_1` FOREIGN KEY (`manager_id`) REFERENCES `employee` (`id`),
-  CONSTRAINT `official_branch_ibfk_2` FOREIGN KEY (`deptid`) REFERENCES `department` (`deptid`)
+  CONSTRAINT `official_branch_ibfk_1` FOREIGN KEY (`manager_id`) REFERENCES `employees` (`id`),
+  CONSTRAINT `official_branch_ibfk_2` FOREIGN KEY (`deptid`) REFERENCES `departments` (`deptid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `official_branch`
+-- Dumping data for table `official_branches`
 --
 
-LOCK TABLES `official_branch` WRITE;
-/*!40000 ALTER TABLE `official_branch` DISABLE KEYS */;
-/*!40000 ALTER TABLE `official_branch` ENABLE KEYS */;
+LOCK TABLES `official_branches` WRITE;
+/*!40000 ALTER TABLE `official_branches` DISABLE KEYS */;
+/*!40000 ALTER TABLE `official_branches` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `official_department`
+-- Table structure for table `official_departments`
 --
 
-DROP TABLE IF EXISTS `official_department`;
+DROP TABLE IF EXISTS `official_departments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `official_department` (
+CREATE TABLE `official_departments` (
   `deptid` int NOT NULL,
   KEY `deptid` (`deptid`),
-  CONSTRAINT `official_department_ibfk_1` FOREIGN KEY (`deptid`) REFERENCES `department` (`deptid`)
+  CONSTRAINT `official_department_ibfk_1` FOREIGN KEY (`deptid`) REFERENCES `departments` (`deptid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `official_department`
+-- Dumping data for table `official_departments`
 --
 
-LOCK TABLES `official_department` WRITE;
-/*!40000 ALTER TABLE `official_department` DISABLE KEYS */;
-/*!40000 ALTER TABLE `official_department` ENABLE KEYS */;
+LOCK TABLES `official_departments` WRITE;
+/*!40000 ALTER TABLE `official_departments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `official_departments` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -409,21 +412,21 @@ DROP TABLE IF EXISTS `products`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `products` (
-  `product_code` int NOT NULL,
+  `product_code` int NOT NULL AUTO_INCREMENT,
   `brand` varchar(50) DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
-  `buy_price` int DEFAULT NULL,
-  `sell_price` int DEFAULT NULL,
-  `total_amount` int DEFAULT NULL,
-  `availible_amount` int DEFAULT NULL,
+  `buy_price` decimal DEFAULT NULL,
+  `sell_price` decimal DEFAULT NULL,
+  `product_type` varchar(100) DEFAULT NULL,
   `game_type` varchar(100) DEFAULT NULL,
-  `receipt_id` int NOT NULL,
-  `isSold` int DEFAULT NULL,
+  `receipt_id` int DEFAULT NULL,
+  `in_stock` varchar(10) DEFAULT 'NO',
+  `branch_id` int DEFAULT NULL,
   `provider_name` varchar(100) DEFAULT NULL,
-  `sold_date` varchar(100) DEFAULT NULL,
+  `sold_date` DATE DEFAULT NULL,
   PRIMARY KEY (`product_code`),
-  KEY `receipt_id` (`receipt_id`),
-  CONSTRAINT `products_ibfk_1` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`receipt_id`)
+  FOREIGN KEY (`branch_id`) REFERENCES `sales_branches` (`branch_id`),
+  FOREIGN KEY (`receipt_id`) REFERENCES `receipts` (`receipt_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -437,167 +440,168 @@ LOCK TABLES `products` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `products_deal`
+-- Table structure for table `products_deals`
 --
 
-DROP TABLE IF EXISTS `products_deal`;
+DROP TABLE IF EXISTS `products_deals`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `products_deal` (
+CREATE TABLE `products_deals` (
   `deal_id` int NOT NULL,
   `product_code` int NOT NULL,
-  `amount` int DEFAULT NULL,
+  `amount` decimal DEFAULT NULL,
   KEY `deal_id` (`deal_id`),
   KEY `product_code` (`product_code`),
-  CONSTRAINT `products_deal_ibfk_1` FOREIGN KEY (`deal_id`) REFERENCES `deal` (`deal_id`),
+  CONSTRAINT `products_deal_ibfk_1` FOREIGN KEY (`deal_id`) REFERENCES `deals` (`deal_id`),
   CONSTRAINT `products_deal_ibfk_2` FOREIGN KEY (`product_code`) REFERENCES `products` (`product_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `products_deal`
+-- Dumping data for table `products_deals`
 --
 
-LOCK TABLES `products_deal` WRITE;
-/*!40000 ALTER TABLE `products_deal` DISABLE KEYS */;
-/*!40000 ALTER TABLE `products_deal` ENABLE KEYS */;
+LOCK TABLES `products_deals` WRITE;
+/*!40000 ALTER TABLE `products_deals` DISABLE KEYS */;
+/*!40000 ALTER TABLE `products_deals` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `products_has_comment`
+-- Table structure for table `product_has_comment`
 --
 
-DROP TABLE IF EXISTS `products_has_comment`;
+DROP TABLE IF EXISTS `product_has_comment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `products_has_comment` (
+CREATE TABLE `product_has_comment` (
   `product_code` int NOT NULL,
   `comment_id` int NOT NULL,
-  `score` int DEFAULT NULL,
   KEY `product_code` (`product_code`),
   KEY `comment_id` (`comment_id`),
   CONSTRAINT `products_has_comment_ibfk_1` FOREIGN KEY (`product_code`) REFERENCES `products` (`product_code`),
-  CONSTRAINT `products_has_comment_ibfk_2` FOREIGN KEY (`comment_id`) REFERENCES `comment` (`comment_id`)
+  CONSTRAINT `products_has_comment_ibfk_2` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `products_has_comment`
+-- Dumping data for table `product_has_comment`
 --
 
-LOCK TABLES `products_has_comment` WRITE;
-/*!40000 ALTER TABLE `products_has_comment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `products_has_comment` ENABLE KEYS */;
+LOCK TABLES `product_has_comment` WRITE;
+/*!40000 ALTER TABLE `product_has_comment` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_has_comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `receipt`
+-- Table structure for table `receipts`
 --
 
-DROP TABLE IF EXISTS `receipt`;
+DROP TABLE IF EXISTS `receipts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `receipt` (
-  `receipt_id` int NOT NULL,
-  `total_price` int DEFAULT NULL,
+CREATE TABLE `receipts` (
+  `receipt_id` int NOT NULL AUTO_INCREMENT,
+  `total_price` decimal DEFAULT NULL,
   `customer_id` int NOT NULL,
+  `date` DATE NOT NULL,
   `data` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`receipt_id`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `receipt_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
+  CONSTRAINT `receipt_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `receipt`
+-- Dumping data for table `receipts`
 --
 
-LOCK TABLES `receipt` WRITE;
-/*!40000 ALTER TABLE `receipt` DISABLE KEYS */;
-/*!40000 ALTER TABLE `receipt` ENABLE KEYS */;
+LOCK TABLES `receipts` WRITE;
+/*!40000 ALTER TABLE `receipts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `receipts` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `sales_branch`
+-- Table structure for table `sales_branches`
 --
 
-DROP TABLE IF EXISTS `sales_branch`;
+DROP TABLE IF EXISTS `sales_branches`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `sales_branch` (
-  `branch_id` int NOT NULL,
+CREATE TABLE `sales_branches` (
+  `branch_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
-  `address` varchar(50) DEFAULT NULL,
+  `city` VARCHAR(50) NOT NULL,
+  `address` varchar(100) DEFAULT NULL,
   `phonenumber` varchar(50) DEFAULT NULL,
-  `data_Of_creation` varchar(50) DEFAULT NULL,
+  `date_Of_establishment` DATE DEFAULT NULL,
   `deptid` int NOT NULL,
   `manager_id` int NOT NULL,
   PRIMARY KEY (`branch_id`),
   KEY `manager_id` (`manager_id`),
   KEY `deptid` (`deptid`),
-  CONSTRAINT `sales_branch_ibfk_1` FOREIGN KEY (`manager_id`) REFERENCES `employee` (`id`),
-  CONSTRAINT `sales_branch_ibfk_2` FOREIGN KEY (`deptid`) REFERENCES `sales_department` (`deptid`)
+  CONSTRAINT `sales_branch_ibfk_1` FOREIGN KEY (`manager_id`) REFERENCES `employees` (`id`),
+  CONSTRAINT `sales_branch_ibfk_2` FOREIGN KEY (`deptid`) REFERENCES `sales_departments` (`deptid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `sales_branch`
+-- Dumping data for table `sales_branches`
 --
 
-LOCK TABLES `sales_branch` WRITE;
-/*!40000 ALTER TABLE `sales_branch` DISABLE KEYS */;
-/*!40000 ALTER TABLE `sales_branch` ENABLE KEYS */;
+LOCK TABLES `sales_branches` WRITE;
+/*!40000 ALTER TABLE `sales_branches` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sales_branches` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `sales_department`
+-- Table structure for table `sales_departments`
 --
 
-DROP TABLE IF EXISTS `sales_department`;
+DROP TABLE IF EXISTS `sales_departments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `sales_department` (
+CREATE TABLE `sales_departments` (
   `deptid` int NOT NULL,
   KEY `deptid` (`deptid`),
-  CONSTRAINT `sales_department_ibfk_1` FOREIGN KEY (`deptid`) REFERENCES `department` (`deptid`)
+  CONSTRAINT `sales_department_ibfk_1` FOREIGN KEY (`deptid`) REFERENCES `departments` (`deptid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `sales_department`
+-- Dumping data for table `sales_departments`
 --
 
-LOCK TABLES `sales_department` WRITE;
-/*!40000 ALTER TABLE `sales_department` DISABLE KEYS */;
-/*!40000 ALTER TABLE `sales_department` ENABLE KEYS */;
+LOCK TABLES `sales_departments` WRITE;
+/*!40000 ALTER TABLE `sales_departments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sales_departments` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `warehouse`
+-- Table structure for table `warehouses`
 --
 
-DROP TABLE IF EXISTS `warehouse`;
+DROP TABLE IF EXISTS `warehouses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `warehouse` (
-  `id` int NOT NULL,
+CREATE TABLE `warehouses` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
-  `address` varchar(50) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
   `capacity` varchar(50) DEFAULT NULL,
   `manager_id` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `manager_id` (`manager_id`),
-  CONSTRAINT `warehouse_ibfk_1` FOREIGN KEY (`manager_id`) REFERENCES `employee` (`id`)
+  CONSTRAINT `warehouse_ibfk_1` FOREIGN KEY (`manager_id`) REFERENCES `employees` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `warehouse`
+-- Dumping data for table `warehouses`
 --
 
-LOCK TABLES `warehouse` WRITE;
-/*!40000 ALTER TABLE `warehouse` DISABLE KEYS */;
-/*!40000 ALTER TABLE `warehouse` ENABLE KEYS */;
+LOCK TABLES `warehouses` WRITE;
+/*!40000 ALTER TABLE `warehouses` DISABLE KEYS */;
+/*!40000 ALTER TABLE `warehouses` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -610,10 +614,10 @@ DROP TABLE IF EXISTS `warehouse_has_products`;
 CREATE TABLE `warehouse_has_products` (
   `warehouse_id` int NOT NULL,
   `product_code` int NOT NULL,
-  `amount` int DEFAULT NULL,
+  `amount` decimal DEFAULT NULL,
   KEY `warehouse_id` (`warehouse_id`),
   KEY `product_code` (`product_code`),
-  CONSTRAINT `warehouse_has_products_ibfk_1` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouse` (`id`),
+  CONSTRAINT `warehouse_has_products_ibfk_1` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`id`),
   CONSTRAINT `warehouse_has_products_ibfk_2` FOREIGN KEY (`product_code`) REFERENCES `products` (`product_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -628,27 +632,27 @@ LOCK TABLES `warehouse_has_products` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `warranty`
+-- Table structure for table `warranties`
 --
 
-DROP TABLE IF EXISTS `warranty`;
+DROP TABLE IF EXISTS `warranties`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `warranty` (
+CREATE TABLE `warranties` (
   `product_id` int NOT NULL,
-  `end_date` varchar(100) DEFAULT NULL,
+  `end_date` DATE DEFAULT NULL,
   KEY `product_id` (`product_id`),
   CONSTRAINT `warranty_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `warranty`
+-- Dumping data for table `warranties`
 --
 
-LOCK TABLES `warranty` WRITE;
-/*!40000 ALTER TABLE `warranty` DISABLE KEYS */;
-/*!40000 ALTER TABLE `warranty` ENABLE KEYS */;
+LOCK TABLES `warranties` WRITE;
+/*!40000 ALTER TABLE `warranties` DISABLE KEYS */;
+/*!40000 ALTER TABLE `warranties` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

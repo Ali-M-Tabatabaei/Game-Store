@@ -140,7 +140,7 @@ CALL showProductHighestRatingComments('CALL OF DUTY');
 --14- show the top 3 lowest rating comments of a given product
 DELIMITER //
 
-CREATE PROCEDURE showProductHighestRatingComments(IN product_name VARCHAR(100))
+CREATE PROCEDURE showProductLowestRatingComments(IN product_name VARCHAR(100))
 BEGIN
     SELECT comments.comment_id, comments.content, product_comments_ratings.rating
     FROM comments, 
@@ -159,7 +159,7 @@ END //
 
 DELIMITER ;
 
-CALL showProductHighestRatingComments('CALL OF DUTY');
+CALL showProductLowestRatingComments('CALL OF DUTY');
 
 --15- show the monthly sales report of a given product
 DELIMITER //

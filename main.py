@@ -147,7 +147,49 @@ def create_emp():
 
 
 @app.route('/create-product', methods=['GET'])
-def create_emp():
+def create_product():
+    if 'loggedin' in session :
+        if 'admin' in session:
+            try:
+                args = request.args
+                brand = args['brand']
+                name = args['name']
+                '''buy_price = args['buy_price']
+                sell_price = args['sell_price']
+                product_type = args['product_type']
+                game_type = args['game_type']
+                provider_name = args['provider_name']
+                in_stock = args['in_stock']
+                sold_date = args['sold_date']'''
+                branch_id = args['branch_id']
+                receipt_id = args['receipt_id']
+                if receipt_id and branch_id and brand and name and request.method == 'GET':
+                    conn = mysql.connect()
+                    cursor = conn.cursor(pymysql.cursors.DictCursor)
+                    sqlQuery = "INSERT INTO products(name, brand, branch_id, receipt_id) VALUES(%s, %s, %s, %s)"
+                    bindData = (name, brand, branch_id, receipt_id)
+                    cursor.execute(sqlQuery, bindData)
+                    conn.commit()
+                    response = jsonify('Product added successfully!')
+                    response.status_code = 200
+                    return response
+                else:
+                    return show_message()
+            except Exception as e:
+                print(e)
+            finally:
+                cursor.close()
+                conn.close()
+        else:
+            response = jsonify('only accessible by admin!')
+            response.status_code = 403
+            return response
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/update-product', methods=['GET'])
+def update_product():
     if 'loggedin' in session :
         if 'admin' in session:
             try:

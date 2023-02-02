@@ -112,31 +112,76 @@ def profile():
     return redirect(url_for('login'))
 
 
-@app.route('/create', methods=['POST'])
+@app.route('/create-user', methods=['GET'])
 def create_emp():
-    try:
-        _json = request.json
-        _name = _json['name']
-        _email = _json['email']
-        _phone = _json['phone']
-        _address = _json['address']
-        if _name and _email and _phone and _address and request.method == 'POST':
-            conn = mysql.connect()
-            cursor = conn.cursor(pymysql.cursors.DictCursor)
-            sqlQuery = "INSERT INTO emp(name, email, phone, address) VALUES(%s, %s, %s, %s)"
-            bindData = (_name, _email, _phone, _address)
-            cursor.execute(sqlQuery, bindData)
-            conn.commit()
-            response = jsonify('Employee added successfully!')
-            response.status_code = 200
-            return response
+    if 'loggedin' in session :
+        if 'admin' in session:
+            try:
+                args = request.args
+                email = args['email']
+                username = args['username']
+                password = args['password']
+                if email and username and password and request.method == 'GET':
+                    conn = mysql.connect()
+                    cursor = conn.cursor(pymysql.cursors.DictCursor)
+                    sqlQuery = "INSERT INTO accounts(email, username, password) VALUES(%s, %s, %s)"
+                    bindData = (email, username, password)
+                    cursor.execute(sqlQuery, bindData)
+                    conn.commit()
+                    response = jsonify('User added successfully!')
+                    response.status_code = 200
+                    return response
+                else:
+                    return show_message()
+            except Exception as e:
+                print(e)
+            finally:
+                cursor.close()
+                conn.close()
         else:
-            return show_message()
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
+            response = jsonify('only accessible by admin!')
+            response.status_code = 403
+            return response
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/create-product', methods=['GET'])
+def create_emp():
+    if 'loggedin' in session :
+        if 'admin' in session:
+            try:
+                args = request.args
+                brand = args['brand']
+                name = args['name']
+                buy_price = args['buy_price']
+                name = args['name']
+                name = args['name']
+                name = args['name']
+                name = args['name']
+                if email and username and password and request.method == 'GET':
+                    conn = mysql.connect()
+                    cursor = conn.cursor(pymysql.cursors.DictCursor)
+                    sqlQuery = "INSERT INTO accounts(email, username, password) VALUES(%s, %s, %s)"
+                    bindData = (email, username, password)
+                    cursor.execute(sqlQuery, bindData)
+                    conn.commit()
+                    response = jsonify('User added successfully!')
+                    response.status_code = 200
+                    return response
+                else:
+                    return show_message()
+            except Exception as e:
+                print(e)
+            finally:
+                cursor.close()
+                conn.close()
+        else:
+            response = jsonify('only accessible by admin!')
+            response.status_code = 403
+            return response
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/emp')
@@ -173,32 +218,39 @@ def emp_details(emp_id):
         conn.close()
 
 
-@app.route('/update', methods=['PUT'])
+@app.route('/update-user', methods=['GET'])
 def update_emp():
-    try:
-        _json = request.json
-        _id = _json['id']
-        _name = _json['name']
-        _email = _json['email']
-        _phone = _json['phone']
-        _address = _json['address']
-        if _name and _email and _phone and _address and _id and request.method == 'PUT':
-            sqlQuery = "UPDATE emp SET name=%s, email=%s, phone=%s, address=%s WHERE id=%s"
-            bindData = (_name, _email, _phone, _address, _id,)
-            conn = mysql.connect()
-            cursor = conn.cursor()
-            cursor.execute(sqlQuery, bindData)
-            conn.commit()
-            respone = jsonify('Employee updated successfully!')
-            respone.status_code = 200
-            return respone
+    if 'loggedin' in session:
+        if 'admin' in session:
+            try:
+                args = request.args
+                id = args['id']
+                email = args['email']
+                username = args['username']
+                password = args['password']
+                if id and email and username and password and request.method == 'GET':
+                    conn = mysql.connect()
+                    cursor = conn.cursor(pymysql.cursors.DictCursor)
+                    sqlQuery = "update accounts set username = %s, password = %s, email = %s where id = %s"
+                    bindData = (username, password, email, id)
+                    cursor.execute(sqlQuery, bindData)
+                    conn.commit()
+                    response = jsonify('User updated successfully!')
+                    response.status_code = 200
+                    return response
+                else:
+                    return show_message()
+            except Exception as e:
+                print(e)
+            finally:
+                cursor.close()
+                conn.close()
         else:
-            return show_message()
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
+            response = jsonify('only accessible by admin!')
+            response.status_code = 403
+            return response
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/delete/', methods=['DELETE'])

@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>records</title>
 </head>
 <body>
+<div class="record">
+
     <table border="1">
     <thead>
         <tr>
@@ -23,5 +26,6 @@
         {% endfor %}
     </tbody>
     </table>
+</div>
 </body>
 </html>

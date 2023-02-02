@@ -9,12 +9,19 @@ body {
   	background-color: #435165;
   	margin: 0;
 }
-.login, .register {
+.login, .register{
   	width: 400px;
   	background-color: #ffffff;
   	box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
   	margin: 100px auto;
 }
+.record table{
+    background-color: #ffffff;
+    width: 60%;
+    box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
+    margin: auto;
+}
+
 .login h1, .register h1 {
   	text-align: center;
   	color: #5b6574;
@@ -22,10 +29,11 @@ body {
   	padding: 20px 0 20px 0;
   	border-bottom: 1px solid #dee0e4;
 }
-.login .links, .register .links {
+.login .links, .register .links{
   	display: flex;
   	padding: 0 15px;
 }
+
 .login .links a, .register .links a {
   	color: #adb2ba;
   	text-decoration: none;

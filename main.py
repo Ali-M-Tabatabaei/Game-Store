@@ -6,6 +6,8 @@ from config import mysql
 from flask import jsonify
 from flask import flash, request, render_template, redirect, url_for, session
 from typing import re
+import pandas as pd
+from pandas import json_normalize
 
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -227,7 +229,10 @@ def show_products():
             products = cursor.fetchall()
             response = jsonify(products)
             response.status_code = 200
-            return response
+            pd_object = json_normalize(products)
+            temp = pd_object.to_dict('records')
+            column_names = pd_object.columns.values
+            return render_template('record.html', records=temp, colnames=column_names)
         except Exception as e:
             print(e)
         finally:
@@ -250,7 +255,10 @@ def show_customers():
                 customers = cursor.fetchall()
                 response = jsonify(customers)
                 response.status_code = 200
-                return response
+                pd_object = json_normalize(customers)
+                temp = pd_object.to_dict('records')
+                column_names = pd_object.columns.values
+                return render_template('record.html', records=temp, colnames=column_names)
             except Exception as e:
                 print(e)
             finally:
@@ -275,7 +283,10 @@ def show_categories():
             categories = cursor.fetchall()
             response = jsonify(categories)
             response.status_code = 200
-            return response
+            pd_object = json_normalize(categories)
+            temp = pd_object.to_dict('records')
+            column_names = pd_object.columns.values
+            return render_template('record.html', records=temp, colnames=column_names)
         except Exception as e:
             print(e)
         finally:
@@ -294,10 +305,13 @@ def show_receipts():
             query = '''SELECT * FROM receipts;'''
             cursor.execute(query)
             # conn.commit()
-            categories_row = cursor.fetchone()
+            categories_row = cursor.fetchall()
             response = jsonify(categories_row)
             response.status_code = 200
-            return response
+            pd_object = json_normalize(categories_row)
+            temp = pd_object.to_dict('records')
+            column_names = pd_object.columns.values
+            return render_template('record.html', records=temp, colnames=column_names)
         except Exception as e:
             print(e)
         finally:
@@ -322,10 +336,13 @@ def show_top_customers_weekly():
                     '''
             cursor.execute(query)
             # conn.commit()
-            categories_row = cursor.fetchone()
+            categories_row = cursor.fetchall()
             response = jsonify(categories_row)
             response.status_code = 200
-            return response
+            pd_object = json_normalize(categories_row)
+            temp = pd_object.to_dict('records')
+            column_names = pd_object.columns.values
+            return render_template('record.html', records=temp, colnames=column_names)
         except Exception as e:
             print(e)
         finally:
@@ -353,7 +370,10 @@ def show_top_customers_monthly():
             categories_row = cursor.fetchall()
             response = jsonify(categories_row)
             response.status_code = 200
-            return response
+            pd_object = json_normalize(categories_row)
+            temp = pd_object.to_dict('records')
+            column_names = pd_object.columns.values
+            return render_template('record.html', records=temp, colnames=column_names)
         except Exception as e:
             print(e)
         finally:
@@ -382,7 +402,10 @@ def show_most_sold_products_weekly():
             categories_row = cursor.fetchall()
             response = jsonify(categories_row)
             response.status_code = 200
-            return response
+            pd_object = json_normalize(categories_row)
+            temp = pd_object.to_dict('records')
+            column_names = pd_object.columns.values
+            return render_template('record.html', records=temp, colnames=column_names)
         except Exception as e:
             print(e)
         finally:
@@ -411,7 +434,10 @@ def show_most_sold_products_monthly():
             categories_row = cursor.fetchall()
             response = jsonify(categories_row)
             response.status_code = 200
-            return response
+            pd_object = json_normalize(categories_row)
+            temp = pd_object.to_dict('records')
+            column_names = pd_object.columns.values
+            return render_template('record.html', records=temp, colnames=column_names)
         except Exception as e:
             print(e)
         finally:
@@ -437,7 +463,10 @@ def show_special_offers():
             categories_row = cursor.fetchall()
             response = jsonify(categories_row)
             response.status_code = 200
-            return response
+            pd_object = json_normalize(categories_row)
+            temp = pd_object.to_dict('records')
+            column_names = pd_object.columns.values
+            return render_template('record.html', records=temp, colnames=column_names)
         except Exception as e:
             print(e)
         finally:
@@ -465,7 +494,10 @@ def show_provider():
                     provider_row = cursor.fetchall()
                     response = jsonify(provider_row)
                     response.status_code = 200
-                    return response
+                    pd_object = json_normalize(provider_row)
+                    temp = pd_object.to_dict('records')
+                    column_names = pd_object.columns.values
+                    return render_template('record.html', records=temp, colnames=column_names)
                 else:
                     return show_message()
             except Exception as e:
@@ -502,7 +534,10 @@ def show_cheapest_provider():
                     provider_row = cursor.fetchall()
                     response = jsonify(provider_row)
                     response.status_code = 200
-                    return response
+                    pd_object = json_normalize(provider_row)
+                    temp = pd_object.to_dict('records')
+                    column_names = pd_object.columns.values
+                    return render_template('record.html', records=temp, colnames=column_names)
                 else:
                     return show_message()
             except Exception as e:
@@ -535,7 +570,10 @@ def show_last_ten_orders():
                 users_row = cursor.fetchall()
                 response = jsonify(users_row)
                 response.status_code = 200
-                return response
+                pd_object = json_normalize(users_row)
+                temp = pd_object.to_dict('records')
+                column_names = pd_object.columns.values
+                return render_template('record.html', records=temp, colnames=column_names)
             else:
                 return show_message()
         except Exception as e:
@@ -566,7 +604,10 @@ def show_comments():
                 users_row = cursor.fetchall()
                 response = jsonify(users_row)
                 response.status_code = 200
-                return response
+                pd_object = json_normalize(users_row)
+                temp = pd_object.to_dict('records')
+                column_names = pd_object.columns.values
+                return render_template('record.html', records=temp, colnames=column_names)
             else:
                 return show_message()
         except Exception as e:
@@ -597,7 +638,10 @@ def show_top_comments():
                 users_row = cursor.fetchall()
                 response = jsonify(users_row)
                 response.status_code = 200
-                return response
+                pd_object = json_normalize(users_row)
+                temp = pd_object.to_dict('records')
+                column_names = pd_object.columns.values
+                return render_template('record.html', records=temp, colnames=column_names)
             else:
                 return show_message()
         except Exception as e:
@@ -629,7 +673,10 @@ def show_worst_comments():
                 users_row = cursor.fetchall()
                 response = jsonify(users_row)
                 response.status_code = 200
-                return response
+                pd_object = json_normalize(users_row)
+                temp = pd_object.to_dict('records')
+                column_names = pd_object.columns.values
+                return render_template('record.html', records=temp, colnames=column_names)
             else:
                 return show_message()
         except Exception as e:
@@ -659,7 +706,10 @@ def show_total_sold():
                     users_row = cursor.fetchall()
                     response = jsonify(users_row)
                     response.status_code = 200
-                    return response
+                    pd_object = json_normalize(users_row)
+                    temp = pd_object.to_dict('records')
+                    column_names = pd_object.columns.values
+                    return render_template('record.html', records=temp, colnames=column_names)
                 else:
                     return show_message()
             except Exception as e:
@@ -698,7 +748,10 @@ def show_average_income():
                 income = cursor.fetchall()
                 response = jsonify(income)
                 response.status_code = 200
-                return response
+                pd_object = json_normalize(income)
+                temp = pd_object.to_dict('records')
+                column_names = pd_object.columns.values
+                return render_template('record.html', records=temp, colnames=column_names)
             except Exception as e:
                 print(e)
             finally:
@@ -730,7 +783,10 @@ def show_city_customers():
                 customer_row = cursor.fetchall()
                 response = jsonify(customer_row)
                 response.status_code = 200
-                return response
+                pd_object = json_normalize(customer_row)
+                temp = pd_object.to_dict('records')
+                column_names = pd_object.columns.values
+                return render_template('record.html', records=temp, colnames=column_names)
             else:
                 return show_message()
         except Exception as e:
@@ -760,7 +816,10 @@ def show_providers_in_city():
                 customer_row = cursor.fetchall()
                 response = jsonify(customer_row)
                 response.status_code = 200
-                return response
+                pd_object = json_normalize(customer_row)
+                temp = pd_object.to_dict('records')
+                column_names = pd_object.columns.values
+                return render_template('record.html', records=temp, colnames=column_names)
             else:
                 return show_message()
         except Exception as e:

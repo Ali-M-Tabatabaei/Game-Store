@@ -154,19 +154,23 @@ def create_emp():
                 args = request.args
                 brand = args['brand']
                 name = args['name']
-                buy_price = args['buy_price']
-                name = args['name']
-                name = args['name']
-                name = args['name']
-                name = args['name']
-                if email and username and password and request.method == 'GET':
+                '''buy_price = args['buy_price']
+                sell_price = args['sell_price']
+                product_type = args['product_type']
+                game_type = args['game_type']
+                provider_name = args['provider_name']
+                in_stock = args['in_stock']
+                sold_date = args['sold_date']'''
+                branch_id = args['branch_id']
+                receipt_id = args['receipt_id']
+                if receipt_id and branch_id and brand and name and request.method == 'GET':
                     conn = mysql.connect()
                     cursor = conn.cursor(pymysql.cursors.DictCursor)
-                    sqlQuery = "INSERT INTO accounts(email, username, password) VALUES(%s, %s, %s)"
-                    bindData = (email, username, password)
+                    sqlQuery = "INSERT INTO products(name, brand, branch_id, receipt_id) VALUES(%s, %s, %s, %s)"
+                    bindData = (name, brand, branch_id, receipt_id)
                     cursor.execute(sqlQuery, bindData)
                     conn.commit()
-                    response = jsonify('User added successfully!')
+                    response = jsonify('Product added successfully!')
                     response.status_code = 200
                     return response
                 else:
